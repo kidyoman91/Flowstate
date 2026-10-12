@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FLOWSTATE — Productivité, Deep Work & Planning Cozy</title>
+  <meta name="description" content="Plateforme de productivité personnelle alliant Deep Work, Time-blocking, To-Do list et ambiance sonore lo-fi.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0c0e17">
+  <!-- iOS Safari PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Flowstate">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+</head>
+<body>
+  <!-- Ambient Floating Glowing Orbs -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+  <div class="ambient-noise" aria-hidden="true"></div>
+
+  <!-- Confetti Canvas for Celebrations -->
+  <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;"></canvas>
+
+  <div class="app-layout">
+    <!-- Sticky Navigation Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo" title="Flowstate">
+          <svg viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>FLOWSTATE</h1>
+          <div class="brand-badge">Cozy Focus Space</div>
+        </div>
+      </div>
+
+      <!-- Navigation Views -->
+      <nav class="nav-tabs" aria-label="Navigation principale">
+        <button class="nav-tab-btn active" data-nav-target="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Aperçu
+        </button>
+        <button class="nav-tab-btn" data-nav-target="timer" id="nav-timer">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Deep Work
+        </button>
+        <button class="nav-tab-btn" data-nav-target="tasks" id="nav-tasks">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Tâches
+        </button>
+        <button class="nav-tab-btn" data-nav-target="planner" id="nav-planner">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Planning
+        </button>
+        <button class="nav-tab-btn" data-nav-target="stats" id="nav-stats">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Stats & Streaks
+        </button>
+        <button class="nav-tab-btn" data-nav-target="goals" id="nav-goals">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Objectifs
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-actions">
+        <!-- Live Clock & Date -->
+        <div style="text-align: right; margin-right: 0.25rem;">
+          <div id="liveClockTime" style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: var(--text-main);">--:--</div>
+          <div id="liveClockDate" style="font-size: 0.72rem; color: var(--text-dim); text-transform: capitalize;">--</div>
+        </div>
+
+        <!-- Streak Pill -->
+        <div class="streak-pill" title="Série de jours consécutifs avec session de travail">
+          <span class="streak-icon">🔥</span>
+          <span id="headerStreakNum">0</span>j
+        </div>
+
+        <!-- Ambient Sound Mini Player -->
+        <div class="audio-quick-widget" id="audioQuickWidget" title="Ouvrir le mixeur d'ambiance Lo-Fi">
+          <div class="audio-equalizer">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+          <span class="audio-quick-label">Ambiance</span>
+        </div>
+
+        <!-- Backup & Settings Button -->
+        <button class="icon-btn" id="btnOpenBackupModal" title="Sauvegarde, Export/Import JSON">
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2;">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      <!-- ========================================== -->
+      <!-- VIEW 1: DASHBOARD OVERVIEW                 -->
+      <!-- ========================================== -->
+      <section class="tab-view active" id="view-dashboard">
+        <div class="dashboard-hero">
+          <div>
+            <h2 class="greeting-title" id="dashboardGreeting">Bonjour</h2>
+            <p class="greeting-subtitle">Bienvenue dans ton espace de concentration. Prêt pour une session de haut niveau ?</p>
+          </div>
+          <div class="quote-box">
+            <div class="quote-text">« La clarté mène au focus, le focus mène à l'excellence. »</div>
+            <div class="quote-author">— Règle d'or du Deep Work</div>
+          </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="metrics-grid">
+          <div class="glass-panel metric-card">
+            <div class="metric-icon-wrap amber">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div>
+              <div class="metric-value" id="metricTodayFocus">0.0h</div>
+              <div class="metric-label">Focus aujourd'hui</div>
+            </div>
+          </div>
+
+          <div class="glass-panel metric-card">
+            <div class="metric-icon-wrap indigo">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><polyline points="9 11 12 14 22 4"></polyline></svg>
+            </div>
+            <div>
+              <div class="metric-value" id="metricPendingTasks">0</div>
+              <div class="metric-label">Tâches en cours</div>
+            </div>
+          </div>
+
+          <div class="glass-panel metric-card">
+            <div class="metric-icon-wrap emerald">
+              <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div>
+              <div class="metric-value" id="metricDoneTasks">0</div>
+              <div class="metric-label">Tâches terminées</div>
+            </div>
+          </div>
+
+          <div class="glass-panel metric-card">
+            <div class="metric-icon-wrap rose">
+              <svg viewBox="0 0 24 24"><path d="M12 2c1.5 3 4 5 4 8a6 6 0 1 1-12 0c0-3 2.5-5 4-8 1 2 2 3 4 0z"></path></svg>
+            </div>
+            <div>
+              <div class="metric-value" id="streakLargeNum">0</div>
+              <div class="metric-label">Jours de suite 🔥</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two columns: Quick Actions & Priorities -->
+        <div class="dashboard-grid">
+          <!-- Left: Current Priorities & Tasks Quick Access -->
+          <div class="glass-panel">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title">
+                  <span>🎯</span> Priorités du Jour
+                </h3>
+                <p class="section-desc">Lance directement un cycle de Deep Work sur tes tâches clés.</p>
+              </div>
+              <button onclick="window.app.switchTab('tasks')" class="btn btn-secondary btn-sm">Voir tout</button>
+            </div>
+            <div id="dashRecentTasksList"></div>
+            <div style="margin-top: 1.25rem; text-align: center;">
+              <button onclick="window.app.switchTab('tasks')" class="btn btn-primary" style="width: 100%;">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Ajouter une nouvelle tâche
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Focus Studio Quick Launcher -->
+          <div class="glass-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">
+                    <span>⚡</span> Studio Deep Work
+                  </h3>
+                  <p class="section-desc">Entrez dans la zone de concentration sans distraction.</p>
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+                Le secret des sessions ultra-productives : une seule intention claire, un timer bien calibré et un environnement sonore propice à l'état de flow.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button onclick="window.app.switchTab('timer')" class="btn btn-primary btn-lg" style="flex: 1;">
+                Ouvrir le Studio Focus 🎧
+              </button>
+              <button onclick="window.app.switchTab('planner')" class="btn btn-secondary btn-lg">
+                Planning 📅
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 2: DEEP WORK STUDIO (TIMER)           -->
+      <!-- ========================================== -->
+      <section class="tab-view" id="view-timer">
+        <div class="deepwork-container">
+          <div class="glass-panel timer-card">
+            <!-- Mode Selector Pills -->
+            <div class="timer-modes">
+              <button class="timer-mode-btn active" data-timer-mode="deepwork">Deep Work (50m)</button>
+              <button class="timer-mode-btn" data-timer-mode="pomodoro">Pomodoro (25m)</button>
+              <button class="timer-mode-btn" data-timer-mode="ultradian">Sprint (90m)</button>
+            </div>
+
+            <!-- Circular SVG Progress Timer -->
+            <div class="timer-circle-wrap">
+              <svg class="timer-svg" viewBox="0 0 320 320">
+                <defs>
+                  <linearGradient id="timerGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#F59E0B" />
+                    <stop offset="50%" stop-color="#FB923C" />
+                    <stop offset="100%" stop-color="#EA580C" />
+                  </linearGradient>
+                </defs>
+                <circle class="timer-circle-bg" cx="160" cy="160" r="140"></circle>
+                <circle class="timer-circle-progress" id="timerProgressCircle" cx="160" cy="160" r="140"></circle>
+              </svg>
+              <div class="timer-center-content">
+                <div class="timer-countdown" id="timerCountdown">50:00</div>
+                <div class="timer-session-label" id="timerSessionLabel">🎯 Deep Work en cours</div>
+                <div class="timer-session-cycle" id="timerCycleLabel">Cycle #1</div>
+              </div>
+            </div>
+
+            <!-- Session Intention / Active Task -->
+            <div class="focus-intention-wrap">
+              <div class="focus-intention-text">
+                <div class="intention-label">Intention de cette session :</div>
+                <div class="intention-task-name" id="intentionTaskName">Session libre (aucun objectif spécifique lié)</div>
+              </div>
+              <button onclick="window.app.switchTab('tasks')" class="btn btn-secondary btn-sm" title="Associer une tâche de la liste">
+                Changer
+              </button>
+            </div>
+
+            <!-- Controls (Play, Reset, Skip, Zen Fullscreen) -->
+            <div class="timer-controls">
+              <button class="btn-timer-secondary" id="btnTimerReset" title="Réinitialiser le cycle">
+                <svg viewBox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              </button>
+
+              <button class="btn-timer-primary" id="btnTimerPlay" title="Démarrer / Pause">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </button>
+
+              <button class="btn-timer-secondary" id="btnTimerSkip" title="Passer au segment suivant">
+                <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+              </button>
+
+              <button class="btn-timer-secondary" id="btnTimerZen" title="Mode Zen Plein Écran (Echap pour sortir)">
+                <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 3: TO-DO LIST & TASK MANAGEMENT       -->
+      <!-- ========================================== -->
+      <section class="tab-view" id="view-tasks">
+        <div class="tasks-container">
+          <!-- Task Creation Bar -->
+          <div class="task-creator-card">
+            <div class="task-input-row">
+              <input type="text" class="task-main-input" id="taskMainInput" placeholder="Quelle est ta prochaine tâche clé ? (Appuie sur Entrée)">
+              <button class="btn btn-primary" id="btnAddTask">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Ajouter
+              </button>
+            </div>
+            <div class="task-options-row">
+              <div class="task-filters-inline">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">Options :</span>
+                <select class="select-custom" id="taskPrioritySelect">
+                  <option value="high">Priorité Haute 🔴</option>
+                  <option value="medium" selected>Priorité Moyenne 🟡</option>
+                  <option value="low">Priorité Basse ⚪</option>
+                </select>
+
+                <select class="select-custom" id="taskCategorySelect">
+                  <option value="deepwork" selected>🎯 Deep Work</option>
+                  <option value="projet">🚀 Projet</option>
+                  <option value="admin">📋 Admin</option>
+                  <option value="perso">🌿 Perso</option>
+                </select>
+
+                <select class="select-custom" id="taskPomoEstSelect">
+                  <option value="1">1 cycle (25-50m)</option>
+                  <option value="2" selected>2 cycles</option>
+                  <option value="3">3 cycles</option>
+                  <option value="4">4 cycles</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filters & Search Bar -->
+          <div class="task-filters-bar">
+            <div class="filter-pills">
+              <button class="filter-pill-btn active" data-task-filter="all">Toutes</button>
+              <button class="filter-pill-btn" data-task-filter="active">En cours</button>
+              <button class="filter-pill-btn" data-task-filter="completed">Terminées</button>
+              <button class="filter-pill-btn" data-task-filter="deepwork">Deep Work</button>
+              <button class="filter-pill-btn" data-task-filter="high">Priorité Haute</button>
+            </div>
+
+            <div class="search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="taskSearchInput" placeholder="Rechercher une tâche...">
+            </div>
+          </div>
+
+          <!-- Dynamic Task List -->
+          <div class="task-list" id="taskList"></div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 4: DAILY PLANNING & TIME BLOCKING     -->
+      <!-- ========================================== -->
+      <section class="tab-view" id="view-planner">
+        <div class="planning-header-row">
+          <div>
+            <h2 class="section-title"><span>📅</span> Emploi du Temps & Time-Blocking</h2>
+            <p class="section-desc">Planifie tes plages horaires de la journée pour éliminer la procrastination.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div class="day-picker" id="dayPickerList"></div>
+            <button class="btn btn-primary btn-sm" id="btnAddTimeBlock">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              + Bloquer un créneau
+            </button>
+          </div>
+        </div>
+
+        <!-- Timeline Schedule Grid -->
+        <div class="timeline-container">
+          <div class="timeline-hours-col" id="timelineHoursCol"></div>
+          <div class="timeline-blocks-col" id="timelineBlocksCol"></div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 5: STATS & STREAKS (HEATMAP & CHARTS) -->
+      <!-- ========================================== -->
+      <section class="tab-view" id="view-stats">
+        <div class="streak-hero-banner">
+          <div class="streak-big-stat">
+            <span class="streak-fire-large">🔥</span>
+            <div>
+              <div class="streak-number" id="streakLargeNum">0</div>
+              <div class="streak-label">Jours consécutifs de productivité</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 2.5rem; text-align: right;">
+            <div>
+              <div style="font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: #fff;" id="bestStreakNum">0 jours</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Record de série</div>
+            </div>
+            <div>
+              <div style="font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--accent-amber-light);" id="totalFocusHours">0 h</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Temps total enregistré</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <!-- 30-Day Activity Heatmap -->
+          <div class="glass-panel col-span-12">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title"><span>📊</span> Intensité de Deep Work (30 derniers jours)</h3>
+                <p class="section-desc">Chaque case représente une journée. Plus la couleur est dorée, plus la session a été intense.</p>
+              </div>
+            </div>
+            <div class="heatmap-container">
+              <div class="heatmap-grid" id="activityHeatmapGrid"></div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 1rem; font-size: 0.75rem; color: var(--text-dim);">
+              <span>Moins</span>
+              <div class="heatmap-cell" data-level="0" style="width: 12px; height: 12px;"></div>
+              <div class="heatmap-cell" data-level="1" style="width: 12px; height: 12px;"></div>
+              <div class="heatmap-cell" data-level="2" style="width: 12px; height: 12px;"></div>
+              <div class="heatmap-cell" data-level="3" style="width: 12px; height: 12px;"></div>
+              <div class="heatmap-cell" data-level="4" style="width: 12px; height: 12px;"></div>
+              <span>Plus</span>
+            </div>
+          </div>
+
+          <!-- Weekly Chart -->
+          <div class="glass-panel col-span-12">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title"><span>📈</span> Répartition de la Semaine en Cours (Minutes)</h3>
+                <p class="section-desc">Volume d'heures et minutes de concentration par jour de la semaine.</p>
+              </div>
+            </div>
+            <div class="chart-wrap" id="weeklyChartWrap"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 6: GOALS & METRICS                   -->
+      <!-- ========================================== -->
+      <section class="tab-view" id="view-goals">
+        <div class="section-header" style="margin-bottom: 2rem;">
+          <div>
+            <h2 class="section-title"><span>🎯</span> Objectifs Hebdomadaires & Métriques Clés</h2>
+            <p class="section-desc">Mesure tes victoires semaine après semaine et garde le cap sur tes priorités.</p>
+          </div>
+          <button class="btn btn-primary" id="btnAddWeeklyGoal">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            + Nouvel Objectif
+          </button>
+        </div>
+
+        <div class="goals-list" id="weeklyGoalsList"></div>
+      </section>
+    </main>
+
+    <!-- Floating Ambient Sound Drawer -->
+    <div class="ambient-drawer" id="ambientDrawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span>🎧</span> Mixeur d'Ambiance Lo-Fi
+        </div>
+        <button class="icon-btn" id="btnCloseDrawer" style="width: 28px; height: 28px;">✕</button>
+      </div>
+
+      <div class="sound-channels-list">
+        <div class="sound-channel-item">
+          <div class="sound-channel-info">
+            <span class="sound-channel-icon">🌧️</span>
+            <span class="sound-channel-name">Pluie douce</span>
+          </div>
+          <div class="sound-slider-wrap">
+            <input type="range" id="slider-rain" min="0" max="1" step="0.05" value="0">
+          </div>
+        </div>
+
+        <div class="sound-channel-item">
+          <div class="sound-channel-info">
+            <span class="sound-channel-icon">🪵</span>
+            <span class="sound-channel-name">Cheminée cosy</span>
+          </div>
+          <div class="sound-slider-wrap">
+            <input type="range" id="slider-fire" min="0" max="1" step="0.05" value="0">
+          </div>
+        </div>
+
+        <div class="sound-channel-item">
+          <div class="sound-channel-info">
+            <span class="sound-channel-icon">🪐</span>
+            <span class="sound-channel-name">Ondes Thêta (432Hz)</span>
+          </div>
+          <div class="sound-slider-wrap">
+            <input type="range" id="slider-drone" min="0" max="1" step="0.05" value="0">
+          </div>
+        </div>
+
+        <div class="sound-channel-item">
+          <div class="sound-channel-info">
+            <span class="sound-channel-icon">🍃</span>
+            <span class="sound-channel-name">Brise apaisante</span>
+          </div>
+          <div class="sound-slider-wrap">
+            <input type="range" id="slider-wind" min="0" max="1" step="0.05" value="0">
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Volume Master :</span>
+          <div style="width: 140px;">
+            <input type="range" id="slider-master" min="0" max="1" step="0.05" value="0.7">
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" id="btnMuteAll" style="width: 100%; margin-top: 0.5rem;">
+          Couper le son (Mute)
+        </button>
+      </div>
+    </div>
+
+    <!-- Backup & JSON Export/Import Modal -->
+    <div class="modal-backdrop" id="backupModal">
+      <div class="modal-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700;">💾 Données & Sauvegarde Locale</h3>
+          <button class="icon-btn" id="btnCloseModal" style="width: 28px; height: 28px;">✕</button>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+          Toutes tes données (tâches, planning, stats, séries et objectifs) sont stockées en toute confidentialité dans ton navigateur (LocalStorage). Tu peux les exporter en JSON ou restaurer une sauvegarde précédente à tout moment.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <button class="btn btn-primary" id="btnExportJson">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Exporter mes données (.json)
+          </button>
+          <button class="btn btn-secondary" id="btnImportJson">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Importer un fichier JSON
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;">
+          <button class="btn btn-ghost" id="btnResetData" style="color: var(--accent-rose); margin-top: 0.5rem;">
+            Réinitialiser toutes les données
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/planner.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('ServiceWorker registration error:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

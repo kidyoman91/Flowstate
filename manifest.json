@@ -1,0 +1,24 @@
+{
+  "name": "FLOWSTATE — Productivité & Deep Work",
+  "short_name": "Flowstate",
+  "description": "Plateforme de productivité personnelle alliant Deep Work, Planning et Ambiance Lo-Fi",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#0c0e17",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

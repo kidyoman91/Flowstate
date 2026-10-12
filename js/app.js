@@ -567,6 +567,7 @@ window.confettiHelper = new ConfettiHelper();
 window.app = new App();
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.authManager) window.authManager.initUI();
   window.confettiHelper.init();
   window.app.init();
 });

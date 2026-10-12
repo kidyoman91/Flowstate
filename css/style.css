@@ -1719,3 +1719,194 @@ input[type="range"]::-webkit-slider-thumb:hover {
     width: auto;
   }
 }
+
+/* ==========================================================================
+   LOGIN / LOCK SCREEN (AUTHENTICATION GATE)
+   ========================================================================== */
+
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(7, 9, 14, 0.94);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(18, 22, 36, 0.82);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), var(--shadow-glow);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-amber), transparent);
+}
+
+.login-brand-logo {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--accent-amber), #ea580c);
+  border-radius: var(--radius-md);
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 25px var(--accent-amber-glow);
+}
+
+.login-brand-logo svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+}
+
+.login-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.login-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  margin-bottom: 2rem;
+}
+
+.login-field-wrap {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.login-field-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.45rem;
+}
+
+.login-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.login-input-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.login-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.login-input:focus {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 2px var(--accent-amber-glow);
+}
+
+.btn-toggle-pass {
+  position: absolute;
+  right: 0.85rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem;
+}
+
+.login-remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.login-remember-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.login-remember-checkbox {
+  accent-color: var(--accent-amber);
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-error-msg {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem;
+  font-size: 0.82rem;
+  margin-bottom: 1.25rem;
+  display: none;
+}
+
+/* Shake Animation */
+.shake {
+  animation: shakeCard 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeCard {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+

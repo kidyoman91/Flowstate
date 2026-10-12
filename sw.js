@@ -2,12 +2,13 @@
  * FLOWSTATE - Service Worker for Offline Mobile Support
  */
 
-const CACHE_NAME = 'flowstate-cache-v1';
+const CACHE_NAME = 'flowstate-cache-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './css/style.css',
+  './js/auth.js',
   './js/audio.js',
   './js/timer.js',
   './js/tasks.js',

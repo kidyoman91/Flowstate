@@ -5,14 +5,13 @@
 
 class AuthManager {
   constructor() {
-    this.storageKey = 'FLOWSTATE_AUTH_CONFIG_V1';
-    this.sessionKey = 'FLOWSTATE_AUTH_SESSION_V1';
+    this.storageKey = 'FLOWSTATE_AUTH_CONFIG_V2';
+    this.sessionKey = 'FLOWSTATE_AUTH_SESSION_V2';
 
-    // Default credentials (will be customized by user)
+    // Configured credentials
     this.defaultCredentials = {
-      username: 'adam',
-      // Stored hash or plain fallback for offline local auth
-      passwordHash: this.hashString('flowstate2026')
+      username: 'AdamFlowState',
+      passwordHash: this.hashString('Lv18102002@')
     };
 
     this.credentials = this.loadCredentials();
@@ -22,7 +21,7 @@ class AuthManager {
   // Lightweight hash for client-side local verification
   hashString(str) {
     let hash = 0;
-    const salt = '_flowstate_salt_';
+    const salt = '_flowstate_salt_key_';
     const input = str + salt;
     for (let i = 0; i < input.length; i++) {
       const char = input.charCodeAt(i);
@@ -42,13 +41,13 @@ class AuthManager {
       console.warn('Erreur chargement auth:', e);
     }
     // Save defaults
-    this.saveCredentials(this.defaultCredentials.username, 'flowstate2026');
+    this.saveCredentials(this.defaultCredentials.username, 'Lv18102002@');
     return this.defaultCredentials;
   }
 
   saveCredentials(username, rawPassword) {
     const data = {
-      username: username.trim().toLowerCase(),
+      username: username.trim(),
       passwordHash: this.hashString(rawPassword.trim())
     };
     this.credentials = data;
@@ -69,7 +68,7 @@ class AuthManager {
     const inputUser = usernameInput.trim().toLowerCase();
     const inputHash = this.hashString(passwordInput.trim());
 
-    if (inputUser === this.credentials.username && inputHash === this.credentials.passwordHash) {
+    if (inputUser === this.credentials.username.toLowerCase() && inputHash === this.credentials.passwordHash) {
       this.isAuthenticated = true;
       if (rememberMe) {
         localStorage.setItem(this.sessionKey, 'authenticated');

@@ -22,6 +22,9 @@
   <link rel="icon" type="image/png" href="assets/icon-192.png">
 </head>
 <body>
+  <!-- Exit Standby Clock Mode Button -->
+  <button class="standby-exit-btn" id="btnExitStandby">✕ Quitter le mode horloge</button>
+
   <!-- Ambient Floating Glowing Orbs -->
   <div class="ambient-bg" aria-hidden="true">
     <div class="ambient-orb orb-1"></div>
@@ -291,6 +294,10 @@
               <button class="btn-timer-secondary" id="btnTimerZen" title="Mode Zen Plein Écran (Echap pour sortir)">
                 <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
               </button>
+
+              <button class="btn-timer-secondary" id="btnTimerStandby" title="Mode Horloge de Bureau (Poser l'iPhone à côté de son ordi)">
+                <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;"><rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect><line x1="12" y1="18" x2="12" y2="18.01"></line></svg>
+              </button>
             </div>
           </div>
         </div>
@@ -461,8 +468,9 @@
       </section>
     </main>
 
-    <!-- Floating Ambient Sound Drawer -->
+    <!-- Floating Ambient Sound Drawer (Bottom Sheet on Mobile) -->
     <div class="ambient-drawer" id="ambientDrawer">
+      <span class="drawer-handle" aria-hidden="true"></span>
       <div class="drawer-header">
         <div class="drawer-title">
           <span>🎧</span> Mixeur d'Ambiance Lo-Fi

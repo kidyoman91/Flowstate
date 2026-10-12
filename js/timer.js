@@ -42,6 +42,8 @@ class DeepWorkTimer {
     this.btnReset = document.getElementById('btnTimerReset');
     this.btnSkip = document.getElementById('btnTimerSkip');
     this.btnZen = document.getElementById('btnTimerZen');
+    this.btnStandby = document.getElementById('btnTimerStandby');
+    this.btnExitStandby = document.getElementById('btnExitStandby');
     this.intentionTextEl = document.getElementById('intentionTaskName');
 
     if (this.progressCircleEl) {
@@ -63,6 +65,8 @@ class DeepWorkTimer {
     if (this.btnReset) this.btnReset.addEventListener('click', () => this.reset());
     if (this.btnSkip) this.btnSkip.addEventListener('click', () => this.skip());
     if (this.btnZen) this.btnZen.addEventListener('click', () => this.toggleZenMode());
+    if (this.btnStandby) this.btnStandby.addEventListener('click', () => this.toggleStandbyMode());
+    if (this.btnExitStandby) this.btnExitStandby.addEventListener('click', () => this.toggleStandbyMode(false));
 
     // Request notification permission smoothly
     if ('Notification' in window && Notification.permission === 'default') {
@@ -248,12 +252,54 @@ class DeepWorkTimer {
       if (window.app) window.app.showToast('Mode Zen activé. Appuyez sur Echap pour quitter.');
     }
   }
+
+  async toggleStandbyMode(forceState) {
+    const shouldActivate = forceState !== undefined ? forceState : !document.body.classList.contains('standby-mode-active');
+    document.body.classList.toggle('standby-mode-active', shouldActivate);
+
+    if (shouldActivate) {
+      if (window.app) window.app.showToast('📱 Mode Horloge de Bureau actif (l’écran reste allumé)');
+      // Request Screen Wake Lock so iPhone screen does not turn off
+      if ('wakeLock' in navigator) {
+        try {
+          this.wakeLockSentinel = await navigator.wakeLock.request('screen');
+        } catch (err) {
+          console.log('WakeLock non disponible:', err);
+        }
+      }
+    } else {
+      if (this.wakeLockSentinel) {
+        try {
+          await this.wakeLockSentinel.release();
+          this.wakeLockSentinel = null;
+        } catch (e) {}
+      }
+    }
+  }
 }
 
-// Global ESC listener to exit Zen Mode
+// Global Keyboard shortcuts for Desktop:
+// - Space: Toggle Start/Pause (if not focused on an input)
+// - Escape: Exit Zen or Standby mode
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && document.body.classList.contains('zen-active')) {
-    document.body.classList.remove('zen-active');
+  // ESC exits Zen / Standby
+  if (e.key === 'Escape') {
+    if (document.body.classList.contains('standby-mode-active')) {
+      window.deepWorkTimer.toggleStandbyMode(false);
+    }
+    if (document.body.classList.contains('zen-active')) {
+      document.body.classList.remove('zen-active');
+    }
+    return;
+  }
+
+  // Spacebar toggles timer play/pause on desktop (if user isn't typing in an input)
+  if (e.code === 'Space') {
+    const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+    if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+      e.preventDefault();
+      window.deepWorkTimer.toggle();
+    }
   }
 });
 

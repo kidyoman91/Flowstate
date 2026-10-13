@@ -2,7 +2,7 @@
  * FLOWSTATE - Service Worker for Offline Mobile Support
  */
 
-const CACHE_NAME = 'flowstate-cache-v6';
+const CACHE_NAME = 'flowstate-cache-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const ASSETS_TO_CACHE = [
   './js/stats.js',
   './js/cloud.js',
   './js/app.js',
+  './assets/bg.jpg',
   './assets/apple-touch-icon.png',
   './assets/icon-192.png',
   './assets/icon-512.png'

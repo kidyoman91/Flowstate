@@ -116,15 +116,6 @@
           <span class="cloud-pill-status" id="cloudStatusText">Local</span>
         </button>
 
-        <!-- Backup & Settings Button -->
-        <button class="icon-btn" id="btnOpenBackupModal" title="Sauvegarde, Export/Import JSON">
-          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2;">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-        </button>
-
         <!-- Lock / Logout Button -->
         <button class="icon-btn" id="btnHeaderLogout" onclick="logout()" title="Se déconnecter / Verrouiller l'accès">
           <svg viewBox="0 0 24 24" style="width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2;">
@@ -560,32 +551,7 @@
       </div>
     </div>
 
-    <!-- Backup & JSON Export/Import Modal -->
-    <div class="modal-backdrop" id="backupModal">
-      <div class="modal-dialog">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-          <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700;">💾 Données & Sauvegarde Locale</h3>
-          <button class="icon-btn" id="btnCloseModal" style="width: 28px; height: 28px;">✕</button>
-        </div>
-        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
-          Toutes tes données (tâches, planning, stats, séries et objectifs) sont stockées en toute confidentialité dans ton navigateur (LocalStorage). Tu peux les exporter en JSON ou restaurer une sauvegarde précédente à tout moment.
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <button class="btn btn-primary" id="btnExportJson">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            Exporter mes données (.json)
-          </button>
-          <button class="btn btn-secondary" id="btnImportJson">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            Importer un fichier JSON
-          </button>
-          <input type="file" id="importFileInput" accept=".json" style="display: none;">
-          <button class="btn btn-ghost" id="btnResetData" style="color: var(--accent-rose); margin-top: 0.5rem;">
-            Réinitialiser toutes les données
-          </button>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Cloud Sync & Supabase Modal -->
     <div class="modal-backdrop" id="cloudModal">

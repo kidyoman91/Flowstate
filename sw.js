@@ -2,7 +2,7 @@
  * FLOWSTATE - Service Worker for Offline Mobile Support
  */
 
-const CACHE_NAME = 'flowstate-cache-v5';
+const CACHE_NAME = 'flowstate-cache-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

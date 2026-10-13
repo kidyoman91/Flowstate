@@ -267,6 +267,7 @@ class App {
     this.bindHeaderActions();
     this.bindAmbientDrawer();
     this.bindBackupModal();
+    this.preventHorizontalTrackpadBounce();
     this.startClock();
     this.updateUserProfile();
     this.updateGreeting();
@@ -280,6 +281,27 @@ class App {
     if (window.taskManager) window.taskManager.init();
     if (window.plannerManager) window.plannerManager.init();
     if (window.statsManager) window.statsManager.init();
+  }
+
+  preventHorizontalTrackpadBounce() {
+    // Lock horizontal navigation gestures on Mac trackpads so the page never moves horizontally
+    window.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 8) {
+        let el = e.target;
+        let allowsScrollX = false;
+        while (el && el !== document.body && el !== document.documentElement) {
+          const style = window.getComputedStyle(el);
+          if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && el.scrollWidth > el.clientWidth) {
+            allowsScrollX = true;
+            break;
+          }
+          el = el.parentElement;
+        }
+        if (!allowsScrollX) {
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
   }
 
   bindNavigation() {

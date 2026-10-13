@@ -17,6 +17,7 @@ class DeepWorkTimer {
 
     this.totalSeconds = 50 * 60;
     this.remainingSeconds = 50 * 60;
+    this.targetEndTime = null;
     this.isRunning = false;
     this.intervalId = null;
 
@@ -74,6 +75,19 @@ class DeepWorkTimer {
         Notification.requestPermission();
       }, { once: true });
     }
+
+    // Background tab & app switch auto-sync:
+    // Browser tabs aggressively throttle setInterval in the background.
+    // By re-syncing against targetEndTime on visibilitychange, focus and pageshow,
+    // the timer is ALWAYS 100% accurate down to the second when returning to the tab.
+    const resyncTimer = () => {
+      if (this.isRunning && this.targetEndTime) {
+        this.tick();
+      }
+    };
+    document.addEventListener('visibilitychange', resyncTimer);
+    window.addEventListener('focus', resyncTimer);
+    window.addEventListener('pageshow', resyncTimer);
   }
 
   setMode(modeKey) {
@@ -90,6 +104,7 @@ class DeepWorkTimer {
 
     this.totalSeconds = modeConfig.workMin * 60;
     this.remainingSeconds = this.totalSeconds;
+    this.targetEndTime = null;
 
     // Update active tab styles
     document.querySelectorAll('[data-timer-mode]').forEach(btn => {
@@ -111,20 +126,31 @@ class DeepWorkTimer {
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
+    this.targetEndTime = Date.now() + (this.remainingSeconds * 1000);
     this.updatePlayBtnState(true);
 
+    // Run tick immediately
+    this.tick();
+
+    // Check frequently (250ms) to update display precisely
     this.intervalId = setInterval(() => {
       this.tick();
-    }, 1000);
+    }, 250);
   }
 
   pause() {
+    if (this.isRunning && this.targetEndTime) {
+      const now = Date.now();
+      this.remainingSeconds = Math.max(0, Math.ceil((this.targetEndTime - now) / 1000));
+    }
     this.isRunning = false;
+    this.targetEndTime = null;
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
     this.updatePlayBtnState(false);
+    this.updateDisplay();
   }
 
   reset() {
@@ -132,6 +158,7 @@ class DeepWorkTimer {
     const modeConfig = this.modes[this.currentMode];
     this.totalSeconds = (this.isBreak ? modeConfig.breakMin : modeConfig.workMin) * 60;
     this.remainingSeconds = this.totalSeconds;
+    this.targetEndTime = null;
     this.updateDisplay();
   }
 
@@ -141,10 +168,17 @@ class DeepWorkTimer {
   }
 
   tick() {
-    if (this.remainingSeconds > 0) {
-      this.remainingSeconds--;
+    if (!this.isRunning || !this.targetEndTime) return;
+
+    const now = Date.now();
+    const remaining = Math.max(0, Math.ceil((this.targetEndTime - now) / 1000));
+
+    if (remaining !== this.remainingSeconds) {
+      this.remainingSeconds = remaining;
       this.updateDisplay();
-    } else {
+    }
+
+    if (remaining <= 0) {
       this.completeSession(false);
     }
   }

@@ -1,11 +1,13 @@
 /**
  * FLOWSTATE - Statistics, Streaks, Heatmap & Weekly Goals
+ * Full Dark Glassmorphism Goal Modal Management
  */
 
 class StatsManager {
   constructor() {}
 
   init() {
+    this.cacheElements();
     this.renderStreakBanner();
     this.renderHeatmap();
     this.renderWeeklyChart();
@@ -13,11 +15,127 @@ class StatsManager {
     this.bindEvents();
   }
 
+  cacheElements() {
+    this.goalModal = document.getElementById('goalModal');
+    this.goalModalForm = document.getElementById('goalModalForm');
+    this.goalModalHeading = document.getElementById('goalModalHeading');
+    this.goalModalEditingId = document.getElementById('goalModalEditingId');
+    this.goalModalTitle = document.getElementById('goalModalTitle');
+    this.goalModalTarget = document.getElementById('goalModalTarget');
+    this.goalModalCurrent = document.getElementById('goalModalCurrent');
+    this.goalModalUnit = document.getElementById('goalModalUnit');
+    this.goalModalCategory = document.getElementById('goalModalCategory');
+    this.btnCloseGoalModal = document.getElementById('btnCloseGoalModal');
+    this.btnCancelGoalModal = document.getElementById('btnCancelGoalModal');
+    this.btnAddGoal = document.getElementById('btnAddWeeklyGoal');
+  }
+
   bindEvents() {
-    const btnAddGoal = document.getElementById('btnAddWeeklyGoal');
-    if (btnAddGoal) {
-      btnAddGoal.addEventListener('click', () => this.promptNewGoal());
+    if (this.btnAddGoal) {
+      this.btnAddGoal.addEventListener('click', () => this.openGoalModal());
     }
+
+    if (this.btnCloseGoalModal) {
+      this.btnCloseGoalModal.addEventListener('click', () => this.closeGoalModal());
+    }
+
+    if (this.btnCancelGoalModal) {
+      this.btnCancelGoalModal.addEventListener('click', () => this.closeGoalModal());
+    }
+
+    if (this.goalModal) {
+      this.goalModal.addEventListener('click', (e) => {
+        if (e.target === this.goalModal) this.closeGoalModal();
+      });
+    }
+
+    if (this.goalModalForm) {
+      this.goalModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSaveGoalModal();
+      });
+    }
+  }
+
+  openGoalModal(goalToEdit = null) {
+    if (!this.goalModal) return;
+
+    if (goalToEdit) {
+      this.goalModalEditingId.value = goalToEdit.id;
+      if (this.goalModalHeading) this.goalModalHeading.textContent = "Modifier l'Objectif";
+      this.goalModalTitle.value = goalToEdit.title || '';
+      this.goalModalTarget.value = goalToEdit.target || 10;
+      this.goalModalCurrent.value = goalToEdit.current || 0;
+      this.goalModalUnit.value = goalToEdit.unit || 'heures';
+      this.goalModalCategory.value = goalToEdit.category || 'Focus';
+    } else {
+      this.goalModalEditingId.value = '';
+      if (this.goalModalHeading) this.goalModalHeading.textContent = "Nouvel Objectif Hebdomadaire";
+      this.goalModalTitle.value = '';
+      this.goalModalTarget.value = 10;
+      this.goalModalCurrent.value = 0;
+      this.goalModalUnit.value = 'heures';
+      this.goalModalCategory.value = 'Focus';
+    }
+
+    this.goalModal.classList.add('open');
+    setTimeout(() => {
+      if (this.goalModalTitle) this.goalModalTitle.focus();
+    }, 100);
+  }
+
+  closeGoalModal() {
+    if (this.goalModal) {
+      this.goalModal.classList.remove('open');
+    }
+  }
+
+  handleSaveGoalModal() {
+    const title = this.goalModalTitle.value.trim();
+    if (!title) return;
+
+    const target = parseFloat(this.goalModalTarget.value) || 10;
+    const current = parseFloat(this.goalModalCurrent.value) || 0;
+    const unit = this.goalModalUnit.value.trim() || 'heures';
+    const category = this.goalModalCategory.value || 'Focus';
+    const editingId = this.goalModalEditingId.value;
+
+    if (!window.appState.goals) window.appState.goals = [];
+
+    if (editingId) {
+      const existing = window.appState.goals.find(g => g.id === editingId);
+      if (existing) {
+        existing.title = title;
+        existing.target = target;
+        existing.current = current;
+        existing.unit = unit;
+        existing.category = category;
+      }
+    } else {
+      const newGoal = {
+        id: 'goal_' + Date.now(),
+        title,
+        target,
+        current,
+        unit,
+        category
+      };
+      window.appState.goals.push(newGoal);
+    }
+
+    window.appState.save();
+    this.closeGoalModal();
+    this.renderGoals();
+
+    if (window.app) {
+      window.app.showToast(editingId ? 'Objectif mis à jour ! 🎯' : 'Nouvel objectif configuré ! 🚀');
+    }
+  }
+
+  editGoal(goalId) {
+    const goal = (window.appState.goals || []).find(g => g.id === goalId);
+    if (!goal) return;
+    this.openGoalModal(goal);
   }
 
   renderStreakBanner() {
@@ -155,10 +273,11 @@ class StatsManager {
           </div>
           <div class="goal-footer">
             <span>Catégorie : <strong>${escapeHtml(goal.category || 'Productivité')}</strong></span>
-            <div style="display: flex; gap: 0.4rem;">
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
               <button onclick="window.statsManager.stepGoal('${goal.id}', -1)" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.6rem;">-1</button>
               <button onclick="window.statsManager.stepGoal('${goal.id}', 1)" class="btn btn-primary btn-sm" style="padding: 0.2rem 0.6rem;">+1</button>
-              <button onclick="window.statsManager.deleteGoal('${goal.id}')" class="btn btn-ghost btn-sm" style="padding: 0.2rem 0.4rem;" title="Supprimer">✕</button>
+              <button onclick="window.statsManager.editGoal('${goal.id}')" class="btn btn-ghost btn-sm" style="padding: 0.2rem 0.45rem;" title="Modifier les paramètres">✏️</button>
+              <button onclick="window.statsManager.deleteGoal('${goal.id}')" class="btn btn-ghost btn-sm" style="padding: 0.2rem 0.4rem; color: var(--accent-rose);" title="Supprimer">✕</button>
             </div>
           </div>
         </div>
@@ -170,7 +289,7 @@ class StatsManager {
     const goal = (window.appState.goals || []).find(g => g.id === goalId);
     if (!goal) return;
 
-    goal.current = Math.max(0, goal.current + step);
+    goal.current = Math.max(0, parseFloat((goal.current + step).toFixed(1)));
     if (goal.current >= goal.target && step > 0) {
       if (window.confettiHelper) window.confettiHelper.fire();
       window.audioEngine.playTaskCompletion();
@@ -185,31 +304,6 @@ class StatsManager {
     window.appState.goals = (window.appState.goals || []).filter(g => g.id !== goalId);
     window.appState.save();
     this.renderGoals();
-  }
-
-  promptNewGoal() {
-    const title = prompt('Intitulé de l’objectif hebdomadaire :', '15h de Deep Work');
-    if (!title || !title.trim()) return;
-
-    const targetStr = prompt('Objectif cible (nombre) :', '15');
-    const target = parseInt(targetStr, 10) || 10;
-
-    const unit = prompt('Unité (heures, sessions, tâches) :', 'heures') || 'heures';
-
-    const newGoal = {
-      id: 'goal_' + Date.now(),
-      title: title.trim(),
-      target: target,
-      current: 0,
-      unit: unit.trim(),
-      category: 'Priorité Hebdo'
-    };
-
-    if (!window.appState.goals) window.appState.goals = [];
-    window.appState.goals.push(newGoal);
-    window.appState.save();
-    this.renderGoals();
-    if (window.app) window.app.showToast('Nouvel objectif configuré ! 🚀');
   }
 }
 

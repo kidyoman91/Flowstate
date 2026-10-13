@@ -199,7 +199,7 @@
             </div>
             <div id="dashRecentTasksList"></div>
             <div style="margin-top: 1.25rem; text-align: center;">
-              <button onclick="window.app.switchTab('tasks')" class="btn btn-primary" style="width: 100%;">
+              <button onclick="window.taskManager.openTaskModal()" class="btn btn-primary" style="width: 100%;">
                 <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Ajouter une nouvelle tâche
               </button>
@@ -308,10 +308,22 @@
       <!-- ========================================== -->
       <section class="tab-view" id="view-tasks">
         <div class="tasks-container">
+          <!-- Section Header with Quick Modal Trigger -->
+          <div class="section-header" style="margin-bottom: 0.5rem;">
+            <div>
+              <h2 class="section-title"><span>✅</span> Mes Tâches & Priorités</h2>
+              <p class="section-desc">Découpe tes objectifs en sous-tâches concrètes et planifie tes créneaux.</p>
+            </div>
+            <button class="btn btn-primary" id="btnOpenTaskModal">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              + Nouvelle Tâche Détaillée
+            </button>
+          </div>
+
           <!-- Task Creation Bar -->
           <div class="task-creator-card">
             <div class="task-input-row">
-              <input type="text" class="task-main-input" id="taskMainInput" placeholder="Quelle est ta prochaine tâche clé ? (Appuie sur Entrée)">
+              <input type="text" class="task-main-input" id="taskMainInput" placeholder="Ajout rapide : quelle est ta prochaine tâche ? (Appuie sur Entrée)">
               <button class="btn btn-primary" id="btnAddTask">
                 <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Ajouter
@@ -340,6 +352,10 @@
                   <option value="4">4 cycles</option>
                 </select>
               </div>
+
+              <button type="button" class="btn btn-secondary btn-sm" id="btnOpenTaskModalWithOptions">
+                + Sous-tâches & Calendrier 📋
+              </button>
             </div>
           </div>
 
@@ -556,6 +572,242 @@
             Réinitialiser toutes les données
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Task Creation & Subtasks Modal -->
+    <div class="modal-backdrop" id="taskModal">
+      <div class="modal-dialog modal-lg">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 id="taskModalHeaderTitle" style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚡</span> <span id="taskModalHeadingText">Nouvelle Tâche & Sous-tâches</span>
+          </h3>
+          <button class="icon-btn" id="btnCloseTaskModal" style="width: 28px; height: 28px;">✕</button>
+        </div>
+
+        <form id="taskModalForm">
+          <input type="hidden" id="taskModalEditingId" value="">
+
+          <!-- Task Title -->
+          <div class="form-group">
+            <label class="form-label" for="taskModalInputTitle">Titre de la tâche</label>
+            <input type="text" id="taskModalInputTitle" class="form-input" placeholder="ex: Finaliser la présentation stratégique..." required autocomplete="off">
+          </div>
+
+          <!-- Category, Priority, Pomodoros -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="taskModalSelectCat">Catégorie</label>
+              <select id="taskModalSelectCat" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
+                <option value="deepwork">🎯 Deep Work</option>
+                <option value="projet">🚀 Projet</option>
+                <option value="admin">📋 Admin</option>
+                <option value="perso">🌿 Perso</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="taskModalSelectPrio">Priorité</label>
+              <select id="taskModalSelectPrio" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
+                <option value="high">🔴 Haute</option>
+                <option value="medium" selected>🟡 Moyenne</option>
+                <option value="low">⚪ Basse</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="taskModalSelectPomos">Cycles Deep Work</label>
+              <select id="taskModalSelectPomos" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
+                <option value="1">1 cycle (25-50m)</option>
+                <option value="2" selected>2 cycles</option>
+                <option value="3">3 cycles</option>
+                <option value="4">4 cycles</option>
+                <option value="6">6 cycles</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Subtasks Builder Section -->
+          <div class="modal-section-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <label class="form-label" style="margin-bottom: 0;">
+                <span>📋</span> Sous-tâches à valider (<span id="taskModalSubtaskCount">0</span>)
+              </label>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">Découpe ta tâche en étapes</span>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <input type="text" id="taskModalSubtaskInput" class="form-input" placeholder="ex: Étape 1 : Rédiger l'introduction..." style="padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnTaskModalAddSubtask">
+                + Ajouter
+              </button>
+            </div>
+
+            <!-- List of created subtasks -->
+            <div id="taskModalSubtaskList" class="modal-subtask-list"></div>
+          </div>
+
+          <!-- Calendar / Planning Integration -->
+          <div class="modal-section-card">
+            <label class="custom-toggle-label" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <span style="font-size: 1.15rem;">📅</span>
+                <div>
+                  <div style="font-size: 0.88rem; font-weight: 600; color: var(--text-main);">Programmer dans le calendrier</div>
+                  <div style="font-size: 0.75rem; color: var(--text-dim);">Bloquer un créneau horaire dans ton time-blocking</div>
+                </div>
+              </div>
+              <input type="checkbox" id="taskModalScheduleToggle" class="login-remember-checkbox">
+            </label>
+
+            <!-- Scheduled fields (collapsible) -->
+            <div id="taskModalScheduleFields" style="display: none; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Jour</label>
+                  <select id="taskModalScheduleDay" class="select-custom" style="width: 100%;">
+                    <option value="1">Lundi</option>
+                    <option value="2">Mardi</option>
+                    <option value="3">Mercredi</option>
+                    <option value="4">Jeudi</option>
+                    <option value="5">Vendredi</option>
+                    <option value="6">Samedi</option>
+                    <option value="7">Dimanche</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Début</label>
+                  <input type="time" id="taskModalScheduleStart" class="form-input" value="09:00">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Fin</label>
+                  <input type="time" id="taskModalScheduleEnd" class="form-input" value="10:30">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-ghost" id="btnCancelTaskModal">Annuler</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveTaskModal">
+              <span>Enregistrer la tâche</span> ⚡
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Weekly Goal Modal -->
+    <div class="modal-backdrop" id="goalModal">
+      <div class="modal-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🎯</span> <span id="goalModalHeading">Nouvel Objectif Hebdomadaire</span>
+          </h3>
+          <button class="icon-btn" id="btnCloseGoalModal" style="width: 28px; height: 28px;">✕</button>
+        </div>
+
+        <form id="goalModalForm">
+          <input type="hidden" id="goalModalEditingId" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="goalModalTitle">Titre de l'objectif</label>
+            <input type="text" id="goalModalTitle" class="form-input" placeholder="ex: 15h de Deep Work, 12 tâches terminées..." required autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="goalModalTarget">Objectif cible (nombre)</label>
+              <input type="number" id="goalModalTarget" class="form-input" min="1" step="0.5" value="10" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="goalModalCurrent">Progression actuelle</label>
+              <input type="number" id="goalModalCurrent" class="form-input" min="0" step="0.5" value="0">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="goalModalUnit">Unité de mesure</label>
+              <input type="text" id="goalModalUnit" class="form-input" placeholder="heures, tâches, séances, cycles..." value="heures" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="goalModalCategory">Catégorie</label>
+              <select id="goalModalCategory" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
+                <option value="Focus">Focus 🎯</option>
+                <option value="Livrables">Livrables 🚀</option>
+                <option value="Santé">Santé & Bien-être ⚡</option>
+                <option value="Personnel">Personnel 🌿</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-ghost" id="btnCancelGoalModal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Enregistrer l'objectif 🚀</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Time-Block Modal -->
+    <div class="modal-backdrop" id="timeBlockModal">
+      <div class="modal-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📅</span> <span>Bloquer un Créneau Temporel</span>
+          </h3>
+          <button class="icon-btn" id="btnCloseTimeBlockModal" style="width: 28px; height: 28px;">✕</button>
+        </div>
+
+        <form id="timeBlockModalForm">
+          <div class="form-group">
+            <label class="form-label" for="timeBlockTitle">Titre de l'activité</label>
+            <input type="text" id="timeBlockTitle" class="form-input" placeholder="ex: Deep Work : Architecture & Code..." required autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="timeBlockDay">Jour</label>
+              <select id="timeBlockDay" class="select-custom" style="width: 100%;">
+                <option value="1">Lundi</option>
+                <option value="2">Mardi</option>
+                <option value="3">Mercredi</option>
+                <option value="4">Jeudi</option>
+                <option value="5">Vendredi</option>
+                <option value="6">Samedi</option>
+                <option value="7">Dimanche</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="timeBlockType">Type d'activité</label>
+              <select id="timeBlockType" class="select-custom" style="width: 100%;">
+                <option value="deepwork">🎯 Deep Work</option>
+                <option value="meeting">👥 Réunion</option>
+                <option value="sport">⚡ Sport / Santé</option>
+                <option value="break">☕ Pause</option>
+                <option value="review">🔍 Revue / Bilan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="timeBlockStart">Heure de début</label>
+              <input type="time" id="timeBlockStart" class="form-input" value="09:00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="timeBlockEnd">Heure de fin</label>
+              <input type="time" id="timeBlockEnd" class="form-input" value="10:30" required>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-ghost" id="btnCancelTimeBlockModal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Bloquer le créneau 📅</button>
+          </div>
+        </form>
       </div>
     </div>
 

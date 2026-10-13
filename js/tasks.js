@@ -1,11 +1,13 @@
 /**
  * FLOWSTATE - Tasks & To-Do List Management
+ * Includes full task modal, dynamic subtasks, and calendar integration
  */
 
 class TaskManager {
   constructor() {
     this.currentFilter = 'all';
     this.searchQuery = '';
+    this.modalSubtasks = [];
   }
 
   init() {
@@ -22,18 +24,41 @@ class TaskManager {
     this.taskPomoEstSelect = document.getElementById('taskPomoEstSelect');
     this.btnAddTask = document.getElementById('btnAddTask');
     this.taskSearchInput = document.getElementById('taskSearchInput');
+
+    // Modal elements
+    this.taskModal = document.getElementById('taskModal');
+    this.taskModalForm = document.getElementById('taskModalForm');
+    this.taskModalHeadingText = document.getElementById('taskModalHeadingText');
+    this.taskModalEditingId = document.getElementById('taskModalEditingId');
+    this.taskModalInputTitle = document.getElementById('taskModalInputTitle');
+    this.taskModalSelectCat = document.getElementById('taskModalSelectCat');
+    this.taskModalSelectPrio = document.getElementById('taskModalSelectPrio');
+    this.taskModalSelectPomos = document.getElementById('taskModalSelectPomos');
+    this.taskModalSubtaskCount = document.getElementById('taskModalSubtaskCount');
+    this.taskModalSubtaskInput = document.getElementById('taskModalSubtaskInput');
+    this.btnTaskModalAddSubtask = document.getElementById('btnTaskModalAddSubtask');
+    this.taskModalSubtaskList = document.getElementById('taskModalSubtaskList');
+    this.taskModalScheduleToggle = document.getElementById('taskModalScheduleToggle');
+    this.taskModalScheduleFields = document.getElementById('taskModalScheduleFields');
+    this.taskModalScheduleDay = document.getElementById('taskModalScheduleDay');
+    this.taskModalScheduleStart = document.getElementById('taskModalScheduleStart');
+    this.taskModalScheduleEnd = document.getElementById('taskModalScheduleEnd');
+    this.btnCloseTaskModal = document.getElementById('btnCloseTaskModal');
+    this.btnCancelTaskModal = document.getElementById('btnCancelTaskModal');
+    this.btnOpenTaskModal = document.getElementById('btnOpenTaskModal');
+    this.btnOpenTaskModalWithOptions = document.getElementById('btnOpenTaskModalWithOptions');
   }
 
   bindEvents() {
     if (this.btnAddTask) {
-      this.btnAddTask.addEventListener('click', () => this.handleAddTask());
+      this.btnAddTask.addEventListener('click', () => this.handleQuickAddTask());
     }
 
     if (this.taskInputEl) {
       this.taskInputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          this.handleAddTask();
+          this.handleQuickAddTask();
         }
       });
     }
@@ -54,9 +79,242 @@ class TaskManager {
         this.render();
       });
     });
+
+    // Modal triggers
+    if (this.btnOpenTaskModal) {
+      this.btnOpenTaskModal.addEventListener('click', () => this.openTaskModal());
+    }
+
+    if (this.btnOpenTaskModalWithOptions) {
+      this.btnOpenTaskModalWithOptions.addEventListener('click', () => {
+        const currentTitle = this.taskInputEl ? this.taskInputEl.value.trim() : '';
+        this.openTaskModal(null, currentTitle);
+      });
+    }
+
+    if (this.btnCloseTaskModal) {
+      this.btnCloseTaskModal.addEventListener('click', () => this.closeTaskModal());
+    }
+
+    if (this.btnCancelTaskModal) {
+      this.btnCancelTaskModal.addEventListener('click', () => this.closeTaskModal());
+    }
+
+    if (this.taskModal) {
+      this.taskModal.addEventListener('click', (e) => {
+        if (e.target === this.taskModal) this.closeTaskModal();
+      });
+    }
+
+    // Subtask add in modal
+    if (this.btnTaskModalAddSubtask) {
+      this.btnTaskModalAddSubtask.addEventListener('click', () => this.addModalSubtask());
+    }
+
+    if (this.taskModalSubtaskInput) {
+      this.taskModalSubtaskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.addModalSubtask();
+        }
+      });
+    }
+
+    // Schedule toggle
+    if (this.taskModalScheduleToggle) {
+      this.taskModalScheduleToggle.addEventListener('change', () => {
+        if (this.taskModalScheduleFields) {
+          this.taskModalScheduleFields.style.display = this.taskModalScheduleToggle.checked ? 'block' : 'none';
+        }
+      });
+    }
+
+    // Modal Form Submit
+    if (this.taskModalForm) {
+      this.taskModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSaveTaskModal();
+      });
+    }
   }
 
-  handleAddTask() {
+  openTaskModal(taskToEdit = null, prefilledTitle = '') {
+    if (!this.taskModal) return;
+
+    if (taskToEdit) {
+      this.taskModalEditingId.value = taskToEdit.id;
+      if (this.taskModalHeadingText) this.taskModalHeadingText.textContent = "Modifier la Tâche";
+      this.taskModalInputTitle.value = taskToEdit.title || '';
+      this.taskModalSelectCat.value = taskToEdit.tag || 'deepwork';
+      this.taskModalSelectPrio.value = taskToEdit.priority || 'medium';
+      this.taskModalSelectPomos.value = taskToEdit.estimatedPomos || 2;
+      this.modalSubtasks = taskToEdit.subtasks ? JSON.parse(JSON.stringify(taskToEdit.subtasks)) : [];
+
+      // Reset schedule toggle
+      if (this.taskModalScheduleToggle) {
+        this.taskModalScheduleToggle.checked = false;
+        if (this.taskModalScheduleFields) this.taskModalScheduleFields.style.display = 'none';
+      }
+    } else {
+      this.taskModalEditingId.value = '';
+      if (this.taskModalHeadingText) this.taskModalHeadingText.textContent = "Nouvelle Tâche & Sous-tâches";
+      this.taskModalInputTitle.value = prefilledTitle || (this.taskInputEl ? this.taskInputEl.value.trim() : '');
+      this.taskModalSelectCat.value = this.taskCategorySelect ? this.taskCategorySelect.value : 'deepwork';
+      this.taskModalSelectPrio.value = this.taskPrioritySelect ? this.taskPrioritySelect.value : 'medium';
+      this.taskModalSelectPomos.value = this.taskPomoEstSelect ? this.taskPomoEstSelect.value : 2;
+      this.modalSubtasks = [];
+
+      // Default schedule day to today's day (1 = Monday, 7 = Sunday)
+      const currentDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
+      if (this.taskModalScheduleDay) this.taskModalScheduleDay.value = String(currentDay);
+
+      if (this.taskModalScheduleToggle) {
+        this.taskModalScheduleToggle.checked = false;
+        if (this.taskModalScheduleFields) this.taskModalScheduleFields.style.display = 'none';
+      }
+    }
+
+    if (this.taskModalSubtaskInput) this.taskModalSubtaskInput.value = '';
+    this.renderModalSubtaskList();
+
+    this.taskModal.classList.add('open');
+    setTimeout(() => {
+      if (this.taskModalInputTitle) this.taskModalInputTitle.focus();
+    }, 100);
+  }
+
+  closeTaskModal() {
+    if (this.taskModal) {
+      this.taskModal.classList.remove('open');
+    }
+  }
+
+  addModalSubtask() {
+    if (!this.taskModalSubtaskInput) return;
+    const text = this.taskModalSubtaskInput.value.trim();
+    if (!text) return;
+
+    this.modalSubtasks.push({
+      id: 'sub_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      title: text,
+      completed: false
+    });
+
+    this.taskModalSubtaskInput.value = '';
+    this.renderModalSubtaskList();
+    this.taskModalSubtaskInput.focus();
+  }
+
+  removeModalSubtask(index) {
+    this.modalSubtasks.splice(index, 1);
+    this.renderModalSubtaskList();
+  }
+
+  renderModalSubtaskList() {
+    if (this.taskModalSubtaskCount) {
+      this.taskModalSubtaskCount.textContent = this.modalSubtasks.length;
+    }
+
+    if (!this.taskModalSubtaskList) return;
+
+    if (this.modalSubtasks.length === 0) {
+      this.taskModalSubtaskList.innerHTML = `
+        <div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; padding: 0.75rem;">
+          Aucune sous-tâche pour le moment. Ajoutes-en une ci-dessus pour décomposer ton travail !
+        </div>
+      `;
+      return;
+    }
+
+    this.taskModalSubtaskList.innerHTML = this.modalSubtasks.map((st, idx) => `
+      <div class="modal-subtask-item">
+        <span title="${escapeHtml(st.title)}">📌 ${escapeHtml(st.title)}</span>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="window.taskManager.removeModalSubtask(${idx})" style="padding: 0.15rem 0.4rem; font-size: 0.75rem; color: var(--accent-rose);" title="Retirer cette sous-tâche">
+          ✕
+        </button>
+      </div>
+    `).join('');
+  }
+
+  handleSaveTaskModal() {
+    const title = this.taskModalInputTitle.value.trim();
+    if (!title) return;
+
+    const priority = this.taskModalSelectPrio.value;
+    const tag = this.taskModalSelectCat.value;
+    const pomos = parseInt(this.taskModalSelectPomos.value, 10) || 2;
+    const editingId = this.taskModalEditingId.value;
+
+    let targetTask = null;
+
+    if (editingId) {
+      targetTask = window.appState.tasks.find(t => t.id === editingId);
+      if (targetTask) {
+        targetTask.title = title;
+        targetTask.priority = priority;
+        targetTask.tag = tag;
+        targetTask.estimatedPomos = pomos;
+        targetTask.subtasks = this.modalSubtasks;
+      }
+    } else {
+      targetTask = {
+        id: 'task_' + Date.now(),
+        title,
+        priority,
+        tag,
+        estimatedPomos: pomos,
+        completedPomos: 0,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        subtasks: this.modalSubtasks
+      };
+      window.appState.tasks.unshift(targetTask);
+    }
+
+    // Schedule into calendar if checked
+    if (this.taskModalScheduleToggle && this.taskModalScheduleToggle.checked) {
+      const dayIndex = parseInt(this.taskModalScheduleDay.value, 10) || 1;
+      const startTime = this.taskModalScheduleStart.value || '09:00';
+      const endTime = this.taskModalScheduleEnd.value || '10:30';
+
+      const typeMap = {
+        deepwork: 'deepwork',
+        projet: 'deepwork',
+        admin: 'review',
+        perso: 'break'
+      };
+
+      const newBlock = {
+        id: 'block_' + Date.now(),
+        dayIndex: dayIndex,
+        title: title,
+        startTime: startTime,
+        endTime: endTime,
+        type: typeMap[tag] || 'deepwork'
+      };
+
+      if (!window.appState.schedule) window.appState.schedule = [];
+      window.appState.schedule.push(newBlock);
+
+      if (window.plannerManager) {
+        window.plannerManager.renderBlocks();
+      }
+    }
+
+    window.appState.save();
+    this.closeTaskModal();
+
+    if (this.taskInputEl) this.taskInputEl.value = '';
+    this.render();
+
+    if (window.app) {
+      window.app.updateHeaderStats();
+      const actionLabel = editingId ? 'Tâche mise à jour !' : 'Tâche créée avec ses sous-étapes ! 📋';
+      window.app.showToast(actionLabel);
+    }
+  }
+
+  handleQuickAddTask() {
     const title = this.taskInputEl.value.trim();
     if (!title) return;
 
@@ -123,22 +381,15 @@ class TaskManager {
     }
   }
 
-  addSubtask(taskId) {
-    const title = prompt('Ajouter une sous-tâche :');
-    if (!title || !title.trim()) return;
-
+  editTask(taskId) {
     const task = window.appState.tasks.find(t => t.id === taskId);
     if (!task) return;
+    this.openTaskModal(task);
+  }
 
-    if (!task.subtasks) task.subtasks = [];
-    task.subtasks.push({
-      id: 'sub_' + Date.now(),
-      title: title.trim(),
-      completed: false
-    });
-
-    window.appState.save();
-    this.render();
+  addSubtask(taskId) {
+    // Open the sleek modal directly on this task
+    this.editTask(taskId);
   }
 
   toggleSubtask(taskId, subtaskId) {
@@ -149,6 +400,9 @@ class TaskManager {
     if (sub) {
       sub.completed = !sub.completed;
       window.audioEngine.playTaskCompletion();
+      if (sub.completed && window.confettiHelper) {
+        window.confettiHelper.fire();
+      }
       window.appState.save();
       this.render();
     }
@@ -234,8 +488,8 @@ class TaskManager {
               <span class="pomo-counter-badge" title="Pomodoros estimés">
                 ⏳ ${task.completedPomos || 0}/${task.estimatedPomos || 1}
               </span>
-              <button onclick="window.taskManager.addSubtask('${task.id}')" class="btn btn-ghost btn-sm" style="padding: 0.15rem 0.45rem; font-size: 0.72rem;">
-                + sous-tâche
+              <button onclick="window.taskManager.editTask('${task.id}')" class="btn btn-ghost btn-sm" style="padding: 0.15rem 0.55rem; font-size: 0.74rem;" title="Gérer ou ajouter des sous-tâches">
+                ✏️ Sous-tâches (${task.subtasks ? task.subtasks.length : 0})
               </button>
             </div>
             ${subtasksHtml}

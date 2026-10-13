@@ -7,7 +7,13 @@ class CloudSync {
   constructor() {
     this.storageKey = 'FLOWSTATE_CLOUD_CONFIG';
     
-    // Default config (can be pre-configured here or customized via UI)
+    // Default built-in Supabase configuration for Adam and friends
+    this.DEFAULT_CONFIG = {
+      supabaseUrl: 'https://vinuhlqfhterbpplzzxu.supabase.co',
+      supabaseAnonKey: 'sb_publishable_L0fd1QKKCm_FaQwAuo8Nyw_J5moY4N9',
+      autoSync: true
+    };
+
     this.config = this.loadConfig();
 
     this.syncTimeout = null;
@@ -16,27 +22,32 @@ class CloudSync {
     this.status = 'idle'; // 'idle' | 'syncing' | 'synced' | 'error' | 'unconfigured'
   }
 
+  cleanUrl(url) {
+    if (!url) return '';
+    return (url || '').trim().replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+  }
+
   loadConfig() {
     try {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return {
+          supabaseUrl: this.cleanUrl(parsed.supabaseUrl) || this.DEFAULT_CONFIG.supabaseUrl,
+          supabaseAnonKey: (parsed.supabaseAnonKey || '').trim() || this.DEFAULT_CONFIG.supabaseAnonKey,
+          autoSync: parsed.autoSync !== undefined ? parsed.autoSync : true
+        };
       }
     } catch (e) {
       console.warn('Erreur chargement cloud config:', e);
     }
 
-    return {
-      // Les identifiants Supabase par défaut (peuvent être renseignés par Adam)
-      supabaseUrl: '',
-      supabaseAnonKey: '',
-      autoSync: true
-    };
+    return { ...this.DEFAULT_CONFIG };
   }
 
   saveConfig(supabaseUrl, supabaseAnonKey) {
-    this.config.supabaseUrl = (supabaseUrl || '').trim().replace(/\/$/, '');
-    this.config.supabaseAnonKey = (supabaseAnonKey || '').trim();
+    this.config.supabaseUrl = this.cleanUrl(supabaseUrl) || this.DEFAULT_CONFIG.supabaseUrl;
+    this.config.supabaseAnonKey = (supabaseAnonKey || '').trim() || this.DEFAULT_CONFIG.supabaseAnonKey;
     localStorage.setItem(this.storageKey, JSON.stringify(this.config));
     this.updateUI();
 

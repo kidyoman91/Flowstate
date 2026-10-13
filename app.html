@@ -104,6 +104,18 @@
           <span class="audio-quick-label">Ambiance</span>
         </div>
 
+        <!-- User Profile Pill -->
+        <div class="user-pill" id="headerUserBadge" title="Compte connecté">
+          <span class="user-avatar-dot" id="headerUserAvatar">A</span>
+          <span class="user-name-text" id="headerUserName">Adam</span>
+        </div>
+
+        <!-- Cloud Sync Pill -->
+        <button class="cloud-pill" id="headerCloudSyncBtn" title="Synchronisation Cloud (cliquer pour gérer)">
+          <span class="cloud-pill-icon" id="cloudStatusIcon">☁️</span>
+          <span class="cloud-pill-status" id="cloudStatusText">Local</span>
+        </button>
+
         <!-- Backup & Settings Button -->
         <button class="icon-btn" id="btnOpenBackupModal" title="Sauvegarde, Export/Import JSON">
           <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2;">
@@ -575,6 +587,70 @@
       </div>
     </div>
 
+    <!-- Cloud Sync & Supabase Modal -->
+    <div class="modal-backdrop" id="cloudModal">
+      <div class="modal-dialog modal-lg">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <span>☁️</span> <span>Synchronisation Cloud (Supabase)</span>
+          </h3>
+          <button class="icon-btn" id="btnCloseCloudModal" style="width: 28px; height: 28px;">✕</button>
+        </div>
+
+        <div class="cloud-status-banner">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem;" id="modalCloudStatusText">🟡 Non connecté (mode local uniquement)</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem;" id="modalCloudLastSync">Aucune synchronisation récente</div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnManualCloudSync">
+            Forcer une synchronisation 🔄
+          </button>
+        </div>
+
+        <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem;">
+          Grâce à la synchronisation Cloud gratuite avec <strong>Supabase</strong>, tes tâches, créneaux, stats et objectifs sont automatiquement sauvegardés et synchronisés entre ton Mac, ton iPhone et les appareils de tes amis.
+        </p>
+
+        <form id="cloudConfigForm">
+          <div class="form-group">
+            <label class="form-label" for="cloudSupabaseUrl">URL du projet Supabase (Project URL)</label>
+            <input type="url" id="cloudSupabaseUrl" class="form-input" placeholder="https://xxxxxxxxxxxxxxxxxxxx.supabase.co" autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cloudSupabaseKey">Clé publique API (Anon Public Key)</label>
+            <input type="password" id="cloudSupabaseKey" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin: 1.25rem 0;">
+            <div style="font-size: 0.84rem; font-weight: 600; color: var(--accent-amber); margin-bottom: 0.4rem;">
+              ⚡ Guide express de configuration (gratuit à vie) :
+            </div>
+            <ol style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.25rem; margin: 0;">
+              <li>Crée un compte gratuit sur <strong>supabase.com</strong> et crée un nouveau projet.</li>
+              <li>Dans le menu <strong>SQL Editor</strong> de Supabase, colle et exécute ce code :</li>
+            </ol>
+            <pre class="sql-code-box">CREATE TABLE flowstate_users (
+  user_id TEXT PRIMARY KEY,
+  data JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE flowstate_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHECK (true);</pre>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">
+              3. Dans <strong>Project Settings > API</strong>, copie la <strong>Project URL</strong> et la clé <strong>anon public</strong>, puis colle-les ci-dessus.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('cloudModal').classList.remove('open')">Fermer</button>
+            <button type="submit" class="btn btn-primary">Enregistrer la configuration ☁️</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Task Creation & Subtasks Modal -->
     <div class="modal-backdrop" id="taskModal">
       <div class="modal-dialog modal-lg">
@@ -821,12 +897,17 @@
   <script src="js/tasks.js"></script>
   <script src="js/planner.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/cloud.js"></script>
   <script src="js/app.js"></script>
   <script>
     function logout() {
       if (confirm('Voulez-vous vous déconnecter et verrouiller l’accès ?')) {
         localStorage.removeItem('flowstate_auth');
         sessionStorage.removeItem('flowstate_auth');
+        localStorage.removeItem('flowstate_current_user');
+        sessionStorage.removeItem('flowstate_current_user');
+        localStorage.removeItem('flowstate_display_name');
+        sessionStorage.removeItem('flowstate_display_name');
         window.location.replace('index.html');
       }
     }

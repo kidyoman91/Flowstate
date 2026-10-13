@@ -60,7 +60,7 @@
             class="login-input" 
             id="loginUsername" 
             name="username" 
-            placeholder="AdamFlowState" 
+            placeholder="UserFlowState1" 
             autocomplete="username" 
             required 
             autofocus
@@ -104,9 +104,14 @@
   </main>
 
   <script>
-    // Expected Credentials
-    const EXPECTED_USER = 'adamflowstate';
-    const EXPECTED_PASS = 'Lv18102002@';
+    // Registered Accounts (Adam + friends)
+    const REGISTERED_USERS = {
+      'adamflowstate': {
+        displayName: 'Adam',
+        pass: 'Lv18102002@'
+      }
+      // Les comptes d'amis seront ajoutés ici
+    };
 
     const loginForm = document.getElementById('loginForm');
     const userInput = document.getElementById('loginUsername');
@@ -132,15 +137,27 @@
       const enteredUser = (userInput.value || '').trim().toLowerCase();
       const enteredPass = (passInput.value || '').trim();
 
-      if (enteredUser === EXPECTED_USER && enteredPass === EXPECTED_PASS) {
+      const userRecord = REGISTERED_USERS[enteredUser];
+
+      if (userRecord && userRecord.pass === enteredPass) {
         errorMsg.style.display = 'none';
         btnSubmit.textContent = 'Connexion réussie... 🚀';
         btnSubmit.style.opacity = '0.8';
 
+        const storage = rememberInput.checked ? localStorage : sessionStorage;
+        storage.setItem('flowstate_auth', 'valid');
+        storage.setItem('flowstate_current_user', enteredUser);
+        storage.setItem('flowstate_display_name', userRecord.displayName || enteredUser);
+
+        // Nettoyage de l'autre storage pour éviter tout conflit
         if (rememberInput.checked) {
-          localStorage.setItem('flowstate_auth', 'valid');
+          sessionStorage.removeItem('flowstate_auth');
+          sessionStorage.removeItem('flowstate_current_user');
+          sessionStorage.removeItem('flowstate_display_name');
         } else {
-          sessionStorage.setItem('flowstate_auth', 'valid');
+          localStorage.removeItem('flowstate_auth');
+          localStorage.removeItem('flowstate_current_user');
+          localStorage.removeItem('flowstate_display_name');
         }
 
         setTimeout(() => {

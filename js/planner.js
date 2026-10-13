@@ -1,5 +1,6 @@
 /**
  * FLOWSTATE - Daily Planning & Time Blocking Engine
+ * Connected to Dark Glassmorphism Time-Block Modal
  */
 
 class PlannerManager {
@@ -26,11 +27,22 @@ class PlannerManager {
     this.blocksColEl = document.getElementById('timelineBlocksCol');
     this.dayPickerEl = document.getElementById('dayPickerList');
     this.btnAddBlock = document.getElementById('btnAddTimeBlock');
+
+    // Time-block modal
+    this.timeBlockModal = document.getElementById('timeBlockModal');
+    this.timeBlockModalForm = document.getElementById('timeBlockModalForm');
+    this.timeBlockTitle = document.getElementById('timeBlockTitle');
+    this.timeBlockDay = document.getElementById('timeBlockDay');
+    this.timeBlockType = document.getElementById('timeBlockType');
+    this.timeBlockStart = document.getElementById('timeBlockStart');
+    this.timeBlockEnd = document.getElementById('timeBlockEnd');
+    this.btnCloseTimeBlockModal = document.getElementById('btnCloseTimeBlockModal');
+    this.btnCancelTimeBlockModal = document.getElementById('btnCancelTimeBlockModal');
   }
 
   bindEvents() {
     if (this.btnAddBlock) {
-      this.btnAddBlock.addEventListener('click', () => this.promptNewBlock());
+      this.btnAddBlock.addEventListener('click', () => this.openTimeBlockModal());
     }
 
     // Double click on blocks column to quickly add block at that hour
@@ -39,9 +51,83 @@ class PlannerManager {
         const rect = this.blocksColEl.getBoundingClientRect();
         const offsetY = e.clientY - rect.top;
         const clickedHour = Math.floor(offsetY / this.slotHeight) + this.startHour;
-        this.promptNewBlock(clickedHour);
+        this.openTimeBlockModal(clickedHour);
       });
     }
+
+    if (this.btnCloseTimeBlockModal) {
+      this.btnCloseTimeBlockModal.addEventListener('click', () => this.closeTimeBlockModal());
+    }
+
+    if (this.btnCancelTimeBlockModal) {
+      this.btnCancelTimeBlockModal.addEventListener('click', () => this.closeTimeBlockModal());
+    }
+
+    if (this.timeBlockModal) {
+      this.timeBlockModal.addEventListener('click', (e) => {
+        if (e.target === this.timeBlockModal) this.closeTimeBlockModal();
+      });
+    }
+
+    if (this.timeBlockModalForm) {
+      this.timeBlockModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSaveTimeBlock();
+      });
+    }
+  }
+
+  openTimeBlockModal(defaultStartHour = 9) {
+    if (!this.timeBlockModal) return;
+
+    if (this.timeBlockTitle) this.timeBlockTitle.value = '';
+    if (this.timeBlockDay) this.timeBlockDay.value = String(this.selectedDayIndex);
+    if (this.timeBlockType) this.timeBlockType.value = 'deepwork';
+
+    const startH = Math.min(22, Math.max(7, defaultStartHour));
+    const endH = Math.min(23, startH + 1);
+
+    if (this.timeBlockStart) this.timeBlockStart.value = `${String(startH).padStart(2, '0')}:00`;
+    if (this.timeBlockEnd) this.timeBlockEnd.value = `${String(endH).padStart(2, '0')}:30`;
+
+    this.timeBlockModal.classList.add('open');
+    setTimeout(() => {
+      if (this.timeBlockTitle) this.timeBlockTitle.focus();
+    }, 100);
+  }
+
+  closeTimeBlockModal() {
+    if (this.timeBlockModal) {
+      this.timeBlockModal.classList.remove('open');
+    }
+  }
+
+  handleSaveTimeBlock() {
+    const title = this.timeBlockTitle.value.trim();
+    if (!title) return;
+
+    const dayIndex = parseInt(this.timeBlockDay.value, 10) || this.selectedDayIndex;
+    const type = (this.timeBlockType.value || 'deepwork').toLowerCase();
+    const startTime = this.timeBlockStart.value || '09:00';
+    const endTime = this.timeBlockEnd.value || '10:30';
+
+    const newBlock = {
+      id: 'block_' + Date.now(),
+      dayIndex: dayIndex,
+      title: title,
+      startTime: startTime,
+      endTime: endTime,
+      type: type
+    };
+
+    if (!window.appState.schedule) window.appState.schedule = [];
+    window.appState.schedule.push(newBlock);
+    window.appState.save();
+
+    this.closeTimeBlockModal();
+    this.renderBlocks();
+
+    if (window.app) window.app.showToast('Créneau programmé dans le planning ! 📅');
   }
 
   buildDayPicker() {
@@ -123,34 +209,6 @@ class PlannerManager {
     const totalMinutesFromStart = ((currentHour - this.startHour) * 60) + currentMin;
     const topPx = (totalMinutesFromStart / 60) * this.slotHeight;
     line.style.top = `${topPx}px`;
-  }
-
-  promptNewBlock(defaultStartHour = 9) {
-    const title = prompt('Titre du bloc temporel :', 'Deep Work : Architecture');
-    if (!title || !title.trim()) return;
-
-    const start = prompt('Heure de début (format HH:MM) :', `${String(defaultStartHour).padStart(2, '0')}:00`);
-    if (!start) return;
-
-    const end = prompt('Heure de fin (format HH:MM) :', `${String(defaultStartHour + 1).padStart(2, '0')}:30`);
-    if (!end) return;
-
-    const type = prompt('Catégorie (deepwork / meeting / sport / break / review) :', 'deepwork') || 'deepwork';
-
-    const newBlock = {
-      id: 'block_' + Date.now(),
-      dayIndex: this.selectedDayIndex,
-      title: title.trim(),
-      startTime: start.trim(),
-      endTime: end.trim(),
-      type: type.toLowerCase()
-    };
-
-    if (!window.appState.schedule) window.appState.schedule = [];
-    window.appState.schedule.push(newBlock);
-    window.appState.save();
-    this.renderBlocks();
-    if (window.app) window.app.showToast('Bloc de temps programmé ! 📅');
   }
 
   deleteBlock(blockId) {

@@ -100,26 +100,42 @@ const DEFAULT_INITIAL_STATE = {
 
 class AppState {
   constructor() {
-    this.storageKey = 'FLOWSTATE_DATA_V1';
+    const rawUser = localStorage.getItem('flowstate_current_user') || sessionStorage.getItem('flowstate_current_user') || 'adamflowstate';
+    this.currentUser = rawUser.trim().toLowerCase();
+    this.displayName = localStorage.getItem('flowstate_display_name') || sessionStorage.getItem('flowstate_display_name') || 'Adam';
+    this.storageKey = `FLOWSTATE_DATA_${this.currentUser}`;
+    this.lastUpdatedAt = null;
     this.load();
   }
 
   load() {
     try {
-      const raw = localStorage.getItem(this.storageKey);
+      let raw = localStorage.getItem(this.storageKey);
+
+      // Auto-migration for Adam: if FLOWSTATE_DATA_adamflowstate is empty but legacy FLOWSTATE_DATA_V1 exists, migrate it
+      if (!raw && this.currentUser === 'adamflowstate') {
+        const legacy = localStorage.getItem('FLOWSTATE_DATA_V1');
+        if (legacy) {
+          raw = legacy;
+          localStorage.setItem(this.storageKey, legacy);
+        }
+      }
+
       if (raw) {
         const parsed = JSON.parse(raw);
         this.tasks = parsed.tasks || [];
         this.schedule = parsed.schedule || [];
         this.goals = parsed.goals || [];
         this.stats = parsed.stats || { bestStreak: 0, history: {} };
+        this.lastUpdatedAt = parsed.lastUpdatedAt || new Date().toISOString();
       } else {
-        // Bootstrap defaults
+        // Bootstrap defaults for new user or fresh space
         this.tasks = JSON.parse(JSON.stringify(DEFAULT_INITIAL_STATE.tasks));
         this.schedule = JSON.parse(JSON.stringify(DEFAULT_INITIAL_STATE.schedule));
         this.goals = JSON.parse(JSON.stringify(DEFAULT_INITIAL_STATE.goals));
         this.stats = JSON.parse(JSON.stringify(DEFAULT_INITIAL_STATE.stats));
-        this.save();
+        this.lastUpdatedAt = new Date().toISOString();
+        this.save(false);
       }
     } catch (e) {
       console.error('Erreur chargement localStorage:', e);
@@ -127,18 +143,25 @@ class AppState {
       this.schedule = [];
       this.goals = [];
       this.stats = { bestStreak: 0, history: {} };
+      this.lastUpdatedAt = new Date().toISOString();
     }
   }
 
-  save() {
+  save(triggerCloudSync = true) {
     try {
+      this.lastUpdatedAt = new Date().toISOString();
       const data = {
         tasks: this.tasks,
         schedule: this.schedule,
         goals: this.goals,
-        stats: this.stats
+        stats: this.stats,
+        lastUpdatedAt: this.lastUpdatedAt
       };
       localStorage.setItem(this.storageKey, JSON.stringify(data));
+
+      if (triggerCloudSync && window.cloudSync) {
+        window.cloudSync.syncToCloud();
+      }
     } catch (e) {
       console.error('Erreur sauvegarde localStorage:', e);
     }
@@ -245,8 +268,12 @@ class App {
     this.bindAmbientDrawer();
     this.bindBackupModal();
     this.startClock();
+    this.updateUserProfile();
     this.updateGreeting();
     this.updateHeaderStats();
+
+    // Init cloud sync engine
+    if (window.cloudSync) window.cloudSync.init();
 
     // Render modules
     if (window.deepWorkTimer) window.deepWorkTimer.init();
@@ -406,6 +433,15 @@ class App {
     setInterval(update, 1000);
   }
 
+  updateUserProfile() {
+    const nameEl = document.getElementById('headerUserName');
+    const avatarEl = document.getElementById('headerUserAvatar');
+    const dispName = (window.appState && window.appState.displayName) ? window.appState.displayName : 'Adam';
+    
+    if (nameEl) nameEl.textContent = dispName;
+    if (avatarEl) avatarEl.textContent = dispName.charAt(0).toUpperCase();
+  }
+
   updateGreeting() {
     const greetingEl = document.getElementById('dashboardGreeting');
     if (!greetingEl) return;
@@ -417,7 +453,12 @@ class App {
     else if (hour >= 18 && hour < 23) text = 'Bonne soirée';
     else text = 'Douce nuit & bon focus';
 
-    greetingEl.textContent = text;
+    const dispName = (window.appState && window.appState.displayName) ? window.appState.displayName : '';
+    if (dispName) {
+      greetingEl.textContent = `${text}, ${dispName} 👋`;
+    } else {
+      greetingEl.textContent = text;
+    }
   }
 
   updateHeaderStats() {

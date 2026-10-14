@@ -23,7 +23,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Flowstate">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=8.2">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
 </head>
 <body>
@@ -919,7 +919,9 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => {
+        navigator.serviceWorker.register('./sw.js?v=9').then((reg) => {
+          reg.update();
+        }).catch(err => {
           console.log('ServiceWorker registration error:', err);
         });
       });

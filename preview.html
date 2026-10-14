@@ -6,21 +6,23 @@
   <title>FLOWSTATE — Tactile Studio Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       /* Fond Papier Carnet à Points (Dot-Grid Notebook Paper) */
       --bg-canvas: #f6f5f0;
       --dot-grid-color: rgba(45, 50, 62, 0.22);
 
-      /* Châssis & composants : Blanc craie / Porcelaine mat Braun (très lumineux & épuré) */
+      /* Châssis & composants : Blanc craie / Porcelaine mat Braun */
       --card-bg: #eceeed;
       --card-inner: #dcdedd;
       --card-sunken: #cbcecd;
       --text-title: #111316;
       --text-body: #383c44;
       --text-muted: #6b707c;
+      --text-dim: #8b919e;
       --border-subtle: rgba(255, 255, 255, 0.85);
+      --border-medium: rgba(30, 35, 45, 0.10);
 
       /* Ombres neumorphiques aériennes et physiques posées sur le papier */
       --shadow-outer: 10px 14px 28px rgba(30, 35, 45, 0.08), -6px -6px 14px rgba(255, 255, 255, 0.95);
@@ -32,6 +34,9 @@
       --accent: #ff5500;
       --accent-glow: rgba(255, 85, 0, 0.38);
       --accent-soft: rgba(255, 85, 0, 0.16);
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+      --accent-indigo: #4f46e5;
     }
 
     [data-theme="blue"] {
@@ -73,7 +78,7 @@
     }
 
     /* ========================================================
-       Top Navigation Bar (Identical to mockup)
+       Top Navigation Bar
        ======================================================== */
     .top-header {
       display: flex;
@@ -87,9 +92,9 @@
       display: flex;
       align-items: center;
       gap: 0.85rem;
+      cursor: pointer;
     }
 
-    /* Stepped geometric logo from the mockup */
     .brand-icon {
       width: 32px;
       height: 32px;
@@ -156,7 +161,6 @@
       gap: 1rem;
     }
 
-    /* Color switch toggle */
     .theme-toggle-pill {
       display: flex;
       align-items: center;
@@ -212,8 +216,23 @@
       font-weight: 800;
     }
 
+    /* Views Switching Container */
+    .view-panel {
+      display: none;
+      width: 100%;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .view-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* ========================================================
-       Dashboard 2-Column Grid (Matches Mockup)
+       Dashboard 2-Column Grid
        ======================================================== */
     .dashboard-layout {
       display: grid;
@@ -230,25 +249,27 @@
       position: relative;
     }
 
-    /* ========================================================
-       LEFT COLUMN: Deep Work Timer & Today's Focus Tasks
-       ======================================================== */
     .card-heading {
       font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.01em;
       color: var(--text-title);
       margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
+    /* ========================================================
+       Horseshoe Sculptural Dish Timer
+       ======================================================== */
     .timer-hero-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
-    /* The Horseshoe Sculpted Timer Dish */
     .horseshoe-timer-stage {
       position: relative;
       width: 270px;
@@ -280,7 +301,7 @@
       inset: 0;
       width: 270px;
       height: 270px;
-      transform: rotate(135deg); /* Open horseshoe at bottom */
+      transform: rotate(135deg);
       pointer-events: none;
     }
 
@@ -292,15 +313,15 @@
 
     .horseshoe-svg-track {
       stroke: rgba(0, 0, 0, 0.08);
-      stroke-dasharray: 590; /* 3/4 circumference */
+      stroke-dasharray: 590;
       stroke-dashoffset: 0;
     }
 
     .horseshoe-svg-fill {
       stroke: var(--accent);
       stroke-dasharray: 590;
-      stroke-dashoffset: 80;
-      transition: stroke 0.3s, stroke-dashoffset 0.5s ease;
+      stroke-dashoffset: 0;
+      transition: stroke 0.3s, stroke-dashoffset 0.4s ease;
       filter: drop-shadow(0 0 12px var(--accent-glow));
     }
 
@@ -318,6 +339,39 @@
       letter-spacing: -0.03em;
       color: var(--text-title);
       line-height: 1;
+    }
+
+    .timer-presets-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 1.15rem;
+      background: var(--card-inner);
+      padding: 4px;
+      border-radius: 9999px;
+      box-shadow: var(--shadow-inset);
+    }
+
+    .timer-preset-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .timer-preset-btn:hover {
+      color: var(--text-title);
+    }
+
+    .timer-preset-btn.active {
+      background: var(--card-bg);
+      color: var(--accent);
+      box-shadow: var(--shadow-pill);
     }
 
     .timer-control-buttons {
@@ -365,7 +419,10 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-title);
-      margin-bottom: 1rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .tasks-container {
@@ -377,18 +434,37 @@
     .task-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 0.85rem;
       cursor: pointer;
       user-select: none;
-      padding: 0.35rem 0;
+      padding: 0.55rem 0.85rem;
+      background: var(--card-inner);
+      border-radius: 12px;
+      box-shadow: var(--shadow-inset);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.2s;
+    }
+
+    .task-row:hover {
+      background: #e2e4e3;
+    }
+
+    .task-row-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+      min-width: 0;
     }
 
     .task-check-box {
       width: 20px;
       height: 20px;
       border-radius: 6px;
-      background: var(--card-sunken);
+      background: var(--card-bg);
       box-shadow: var(--shadow-inset);
+      border: 1px solid rgba(30, 35, 45, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -398,6 +474,7 @@
 
     .task-check-box.checked {
       background: var(--accent);
+      border-color: var(--accent);
       box-shadow: 0 2px 8px var(--accent-glow);
     }
 
@@ -409,9 +486,12 @@
     }
 
     .task-text {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       color: var(--text-body);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       transition: all 0.2s;
     }
 
@@ -420,8 +500,58 @@
       text-decoration: line-through;
     }
 
+    .task-row-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    .task-row-note-icon {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      padding: 0.15rem 0.4rem;
+      background: var(--card-bg);
+      border-radius: 6px;
+      box-shadow: var(--shadow-pill);
+    }
+
+    .task-row-sub-pill {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-dim);
+      padding: 0.15rem 0.45rem;
+      background: var(--card-bg);
+      border-radius: 6px;
+      box-shadow: var(--shadow-pill);
+    }
+
+    /* Quick Add Input on Dashboard */
+    .dashboard-task-quick-add {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .dashboard-task-quick-input {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border-medium);
+      box-shadow: var(--shadow-inset);
+      border-radius: 10px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.82rem;
+      color: var(--text-title);
+      outline: none;
+    }
+    .dashboard-task-quick-input:focus {
+      border-color: var(--accent);
+    }
+
     /* ========================================================
-       RIGHT COLUMN: Weekly Calendar Overview
+       RIGHT COLUMN: Calendar, Streak & Radio
        ======================================================== */
     .right-column {
       display: flex;
@@ -514,7 +644,6 @@
       position: relative;
     }
 
-    /* Schedule Time-Blocks */
     .schedule-block {
       border-radius: 8px;
       padding: 0.4rem 0.5rem;
@@ -549,16 +678,13 @@
       box-shadow: 0 2px 8px rgba(30, 35, 45, 0.12);
     }
 
-    /* ========================================================
-       BOTTOM ROW: Streak Tracker & Lo-Fi Radio
-       ======================================================== */
+    /* BOTTOM ROW: Streak & Radio */
     .bottom-cards-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
     }
 
-    /* Weekly Focus Streak Card */
     .streak-dots-row {
       display: flex;
       align-items: center;
@@ -600,7 +726,6 @@
       color: var(--text-body);
     }
 
-    /* Lo-Fi Radio Card */
     .radio-slider-row {
       display: flex;
       align-items: center;
@@ -676,14 +801,774 @@
       color: var(--text-title);
       padding: 0.2rem;
     }
+
+    /* ========================================================
+       DEDICATED TASKS VIEW (When clicking TASKS in header)
+       ======================================================== */
+    .tasks-view-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .tasks-top-metrics-ribbon {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .metric-pill-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 1.15rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .metric-pill-chip .chip-label {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-pill-chip .chip-val {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+    }
+
+    /* Task Creator Chassis */
+    .task-create-chassis {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      border-radius: 24px;
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .task-create-main-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .task-create-input {
+      flex: 1;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid var(--border-medium);
+      border-radius: 14px;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-title);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .task-create-input:focus {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-inset), 0 0 0 2px var(--accent-soft);
+    }
+
+    .task-create-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .task-options-selectors {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .tactile-select {
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-title);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .tactile-select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Filters & Search Row */
+    .tasks-toolbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pills-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      padding: 0.3rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .filter-btn {
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-title);
+    }
+
+    .filter-btn.active {
+      background: var(--card-inner);
+      color: var(--accent);
+      box-shadow: var(--shadow-inset);
+    }
+
+    .tasks-search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      border-radius: 9999px;
+      padding: 0.35rem 1rem;
+      width: 260px;
+    }
+
+    .tasks-search-input-wrap input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-title);
+      width: 100%;
+    }
+
+    /* Full Tasks Cards in List */
+    .tasks-full-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .task-card-item {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      border-radius: 20px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.15rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .task-card-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 12px 18px 34px rgba(30, 35, 45, 0.11), -8px -8px 18px rgba(255, 255, 255, 0.95);
+    }
+
+    .task-card-item.completed {
+      opacity: 0.75;
+    }
+
+    .task-card-item.completed .task-card-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .task-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-title);
+      word-break: break-word;
+    }
+
+    .task-notes-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border-radius: 6px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Notes preview snippet on task card */
+    .task-notes-preview-box {
+      margin-top: 0.35rem;
+      margin-bottom: 0.65rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 95%;
+    }
+
+    .task-notes-preview-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Meta Badges */
+    .task-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .tag-chip {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-pill);
+      color: var(--text-muted);
+    }
+
+    .tag-chip.deepwork { color: var(--accent); }
+    .tag-chip.projet { color: var(--accent-indigo); }
+    .tag-chip.admin { color: #575d69; }
+    .tag-chip.perso { color: var(--accent-emerald); }
+
+    .priority-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .priority-indicator-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .prio-high { color: var(--accent-rose); }
+    .prio-high .priority-indicator-dot { background: var(--accent-rose); box-shadow: 0 0 6px var(--accent-rose); }
+    .prio-medium { color: var(--accent); }
+    .prio-medium .priority-indicator-dot { background: var(--accent); }
+    .prio-low { color: var(--text-dim); }
+    .prio-low .priority-indicator-dot { background: var(--text-dim); }
+
+    .pomo-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Subtasks inside task card */
+    .task-card-subtasks-container {
+      margin-top: 0.85rem;
+      padding: 0.75rem 1rem;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .subtasks-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .subtasks-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .subtasks-progress-groove {
+      flex: 1;
+      max-width: 160px;
+      height: 6px;
+      background: var(--card-sunken);
+      box-shadow: var(--shadow-inset);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .subtasks-progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 9999px;
+      transition: width 0.3s;
+    }
+
+    .subtask-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .subtask-card-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.84rem;
+      color: var(--text-title);
+      cursor: pointer;
+    }
+
+    .subtask-card-item.completed {
+      text-decoration: line-through;
+      color: var(--text-dim);
+    }
+
+    .subtask-mini-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid rgba(30, 35, 45, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .subtask-mini-check.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .subtask-mini-check.checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    .btn-quick-add-subtask {
+      align-self: flex-start;
+      margin-top: 0.2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .btn-quick-add-subtask:hover {
+      color: var(--accent);
+    }
+
+    .task-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-action-round {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--text-title);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-action-round:hover {
+      transform: scale(1.06);
+    }
+    .btn-action-round:active {
+      box-shadow: var(--shadow-inset);
+      transform: scale(0.96);
+    }
+
+    /* ========================================================
+       TASK DETAIL & NOTES MODAL
+       ======================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 35, 45, 0.45);
+      backdrop-filter: blur(12px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-tactile-dialog {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      border-radius: 28px;
+      padding: 2rem 2.25rem;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.94);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.open .modal-tactile-dialog {
+      transform: scale(1);
+    }
+
+    .modal-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .modal-badge-square {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .modal-title-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-title);
+    }
+
+    .modal-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .modal-close-btn:active {
+      box-shadow: var(--shadow-inset);
+    }
+
+    /* Modal Form Controls */
+    .form-group-block {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label-tactile {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    .modal-title-input {
+      width: 100%;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid var(--border-medium);
+      border-radius: 14px;
+      padding: 0.85rem 1.15rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-title);
+      outline: none;
+    }
+    .modal-title-input:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-grid-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* DEDICATED NOTES SECTION IN MODAL */
+    .modal-notes-section {
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border-radius: 18px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-notes-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+
+    .modal-notes-status {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .notes-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+    }
+
+    .notes-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .note-action-btn {
+      border: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .note-action-btn:hover {
+      transform: translateY(-1px);
+    }
+    .note-action-btn:active {
+      box-shadow: var(--shadow-inset);
+      transform: translateY(1px);
+    }
+
+    .modal-notes-textarea {
+      width: 100%;
+      min-height: 160px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text-title);
+      outline: none;
+      resize: vertical;
+    }
+
+    .modal-notes-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    /* SUBTASKS IN MODAL */
+    .modal-subtasks-section {
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      border-radius: 18px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-subtasks-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+
+    .modal-subtasks-progress-text {
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .modal-subtasks-progress-bar {
+      width: 100%;
+      height: 7px;
+      background: var(--card-sunken);
+      border-radius: 9999px;
+      box-shadow: var(--shadow-inset);
+      overflow: hidden;
+      margin-bottom: 0.85rem;
+    }
+
+    .modal-subtasks-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 9999px;
+      transition: width 0.3s;
+    }
+
+    .modal-subtasks-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .modal-subtask-input {
+      flex: 1;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-inset);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      padding: 0.6rem 0.95rem;
+      font-size: 0.85rem;
+      color: var(--text-title);
+      outline: none;
+    }
+    .modal-subtask-input:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-subtasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .modal-subtask-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.85rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-title);
+    }
+
+    .modal-subtask-row.completed span {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .modal-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
 
   <div class="app-viewport">
-    <!-- Top Header -->
+    <!-- Top Navigation Header -->
     <header class="top-header">
-      <div class="brand-group">
+      <div class="brand-group" onclick="switchNavTab('dashboard')">
         <div class="brand-icon">
           <div class="brand-icon-bar"></div>
           <div class="brand-icon-bar"></div>
@@ -695,12 +1580,11 @@
 
       <!-- Center Pill Navigation -->
       <nav class="nav-tabs-pill">
-        <button class="nav-tab-item active">DASHBOARD</button>
-        <button class="nav-tab-item">FOCUS</button>
-        <button class="nav-tab-item">TASKS</button>
-        <button class="nav-tab-item">CALENDAR</button>
-        <button class="nav-tab-item">ANALYTICS</button>
-        <button class="nav-tab-item">SETTINGS</button>
+        <button class="nav-tab-item active" data-tab="dashboard" onclick="switchNavTab('dashboard')">DASHBOARD</button>
+        <button class="nav-tab-item" data-tab="tasks" onclick="switchNavTab('tasks')">TASKS</button>
+        <button class="nav-tab-item" data-tab="focus" onclick="switchNavTab('focus')">FOCUS</button>
+        <button class="nav-tab-item" data-tab="calendar" onclick="switchNavTab('calendar')">CALENDAR</button>
+        <button class="nav-tab-item" data-tab="analytics" onclick="switchNavTab('analytics')">ANALYTICS</button>
       </nav>
 
       <!-- Right Header Actions -->
@@ -711,258 +1595,753 @@
           <button class="theme-toggle-btn" id="btnThemeBlue">🔷 Bleu</button>
         </div>
 
-        <div class="user-profile-pill">
+        <div class="user-profile-pill" onclick="switchNavTab('tasks')" title="Espace de travail Adam">
           <div class="user-avatar-circle">A</div>
           <span>ADAM ⌵</span>
         </div>
       </div>
     </header>
 
-    <!-- Main 2-Column Dashboard Grid -->
-    <main class="dashboard-layout">
-      <!-- ============================================== -->
-      <!-- LEFT COLUMN: Deep Work Card + Focus Tasks      -->
-      <!-- ============================================== -->
-      <section class="tactile-card">
-        <h2 class="card-heading">Deep Work</h2>
+    <!-- ============================================== -->
+    <!-- VIEW 1: DASHBOARD (The 2-Column Masterpiece)   -->
+    <!-- ============================================== -->
+    <section class="view-panel active" id="panel-dashboard">
+      <main class="dashboard-layout">
+        <!-- LEFT COLUMN: Deep Work Card + Focus Tasks -->
+        <div class="tactile-card">
+          <h2 class="card-heading">
+            <span>Deep Work</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;" id="activeTaskIntentionLabel">Libre</span>
+          </h2>
 
-        <!-- Horseshoe Sculptural Timer -->
-        <div class="timer-hero-wrapper">
-          <div class="horseshoe-timer-stage">
-            <svg class="horseshoe-svg" viewBox="0 0 270 270">
-              <circle class="horseshoe-svg-track" cx="135" cy="135" r="115"></circle>
-              <circle class="horseshoe-svg-fill" id="timerArcFill" cx="135" cy="135" r="115"></circle>
-            </svg>
-            <div class="horseshoe-inner-dish">
-              <span class="time-label-small">Time remaining</span>
-              <span class="time-display-huge" id="timerCountdownText">50:00</span>
+          <!-- Horseshoe Sculptural Timer -->
+          <div class="timer-hero-wrapper">
+            <div class="horseshoe-timer-stage">
+              <svg class="horseshoe-svg" viewBox="0 0 270 270">
+                <circle class="horseshoe-svg-track" cx="135" cy="135" r="115"></circle>
+                <circle class="horseshoe-svg-fill" id="timerArcFill" cx="135" cy="135" r="115"></circle>
+              </svg>
+              <div class="horseshoe-inner-dish">
+                <span class="time-label-small">Time remaining</span>
+                <span class="time-display-huge" id="timerCountdownText">50:00</span>
+              </div>
+            </div>
+
+            <div class="timer-presets-row">
+              <button class="timer-preset-btn" onclick="setTimerDuration(25, this)">25m</button>
+              <button class="timer-preset-btn active" onclick="setTimerDuration(50, this)">50m</button>
+              <button class="timer-preset-btn" onclick="setTimerDuration(90, this)">90m</button>
+              <button class="timer-preset-btn" onclick="setTimerDuration(5, this, true)">Pause 5m</button>
+            </div>
+
+            <div class="timer-control-buttons">
+              <button class="btn-pill btn-pill-accent" id="btnPlayPause">
+                <span id="playIcon">▶</span> <span id="playText">PLAY/PAUSE</span>
+              </button>
+              <button class="btn-pill" id="btnResetTimer">
+                ↺ RESET
+              </button>
             </div>
           </div>
 
-          <div class="timer-control-buttons">
-            <button class="btn-pill btn-pill-accent" id="btnPlayPause">
-              <span id="playIcon">▶</span> <span id="playText">PLAY/PAUSE</span>
+          <!-- Today's Focus Tasks Section -->
+          <div>
+            <h3 class="tasks-section-title">
+              <span>Today's Focus Tasks</span>
+              <button class="btn-pill" onclick="openTaskModal()" style="padding: 0.25rem 0.75rem; font-size: 0.72rem;">+ NOUVELLE</button>
+            </h3>
+            
+            <div class="tasks-container" id="dashboardTasksList"></div>
+
+            <!-- Quick Add Bar on Dashboard -->
+            <div class="dashboard-task-quick-add">
+              <input type="text" class="dashboard-task-quick-input" id="dashboardQuickInput" placeholder="Ajout rapide : quelle est ta prochaine tâche ? (Entrée)">
+              <button class="btn-pill btn-pill-accent" onclick="handleDashboardQuickAdd()" style="padding: 0.55rem 0.95rem;">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Calendar Grid + Streak & Radio -->
+        <div class="right-column">
+          <!-- Weekly Overview Time-Blocking Grid -->
+          <div class="tactile-card calendar-card">
+            <div class="calendar-header">
+              <div>
+                <div class="calendar-title-label">Weekly Overview</div>
+                <div class="calendar-week-range" id="calendarDateRange">OCT 14 - 20</div>
+              </div>
+              <div class="calendar-nav-controls">
+                <button class="cal-nav-btn" onclick="prevWeek()">‹</button>
+                <button class="cal-nav-btn" onclick="resetWeek()">•</button>
+                <button class="cal-nav-btn" onclick="nextWeek()">›</button>
+              </div>
+            </div>
+
+            <div class="timetable-grid">
+              <div></div>
+              <div class="timetable-header-cell">Lun</div>
+              <div class="timetable-header-cell">Mar</div>
+              <div class="timetable-header-cell">Mer</div>
+              <div class="timetable-header-cell">Jeu</div>
+              <div class="timetable-header-cell">Ven</div>
+              <div class="timetable-header-cell">Sam</div>
+              <div class="timetable-header-cell">Dim</div>
+
+              <div class="timetable-time-label">08:00</div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+
+              <div class="timetable-time-label">09:00</div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-deep-orange" style="height: 100%;">
+                  DEEP WORK<br>09:00-11:30
+                </div>
+              </div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-deep-light" style="height: 100%;">
+                  CODE REVIEW<br>09:00-11:00
+                </div>
+              </div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-deep-light" style="height: 100%;">
+                  PROJET CORE<br>09:00-11:00
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-deep-orange" style="height: 100%;">
+                  DEEP WORK<br>09:00-11:30
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+
+              <div class="timetable-time-label">11:00</div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+
+              <div class="timetable-time-label">14:00</div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-meeting" style="height: 100%;">
+                  TEAM SYNC<br>14:00-15:30
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-meeting" style="height: 100%;">
+                  CLIENT DECK<br>14:00-15:30
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell" style="grid-row: span 2;">
+                <div class="schedule-block block-meeting" style="height: 100%;">
+                  REVUE DESIGN<br>14:00-15:30
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+
+              <div class="timetable-time-label">16:00</div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Streak & Radio -->
+          <div class="bottom-cards-row">
+            <!-- Weekly Focus Streak -->
+            <div class="tactile-card">
+              <h3 class="calendar-title-label">Weekly Focus Streak</h3>
+              <div class="streak-dots-row">
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle active"></div>
+                  <span class="streak-day-name">Lun</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle active"></div>
+                  <span class="streak-day-name">Mar</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle active"></div>
+                  <span class="streak-day-name">Mer</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle glowing active"></div>
+                  <span class="streak-day-name">Jeu</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle active"></div>
+                  <span class="streak-day-name">Ven</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle"></div>
+                  <span class="streak-day-name">Sam</span>
+                </div>
+                <div class="streak-day-item" onclick="toggleDot(this)">
+                  <div class="streak-dot-circle"></div>
+                  <span class="streak-day-name">Dim</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lo-Fi Radio -->
+            <div class="tactile-card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="calendar-title-label">Lo-Fi Radio</h3>
+                <span style="font-size: 0.9rem; color: var(--text-muted); cursor: pointer;" title="Radio ambiance">•••</span>
+              </div>
+
+              <div class="radio-slider-row">
+                <span class="radio-slider-name">Café</span>
+                <div class="radio-groove-track" onclick="moveThumb(this, event, 'cafe')">
+                  <div class="radio-groove-fill" style="width: 65%;"></div>
+                  <div class="radio-groove-thumb" style="left: 65%;"></div>
+                </div>
+              </div>
+
+              <div class="radio-slider-row">
+                <span class="radio-slider-name">Rain</span>
+                <div class="radio-groove-track" onclick="moveThumb(this, event, 'rain')">
+                  <div class="radio-groove-fill" style="width: 40%;"></div>
+                  <div class="radio-groove-thumb" style="left: 40%;"></div>
+                </div>
+              </div>
+
+              <div class="radio-footer-controls">
+                <div class="radio-buttons">
+                  <button class="btn-radio-mini" title="Précédent" onclick="prevAudioTrack()">|◀</button>
+                  <button class="btn-radio-mini" id="btnRadioPlay" style="font-weight: 800;" onclick="toggleAudioRadio()">▶</button>
+                  <button class="btn-radio-mini" title="Suivant" onclick="nextAudioTrack()">▶|</button>
+                </div>
+                <span class="radio-track-title" id="radioTrackTitle">Chillhop Lofi Beats</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: FULL TASKS, NOTES & SUBTASKS WORKSPACE -->
+    <!-- ============================================== -->
+    <section class="view-panel" id="panel-tasks">
+      <div class="tasks-view-wrapper">
+        <!-- Top Metrics Ribbon -->
+        <div class="tasks-top-metrics-ribbon">
+          <div class="metric-pill-chip">
+            <span class="chip-label">Total</span>
+            <span class="chip-val" id="metricTotal">0</span>
+          </div>
+          <div class="metric-pill-chip">
+            <span class="chip-label">En cours</span>
+            <span class="chip-val" id="metricActive" style="color: var(--accent);">0</span>
+          </div>
+          <div class="metric-pill-chip">
+            <span class="chip-label">Terminées</span>
+            <span class="chip-val" id="metricDone" style="color: var(--accent-emerald);">0</span>
+          </div>
+          <div class="metric-pill-chip">
+            <span class="chip-label">Sous-tâches</span>
+            <span class="chip-val" id="metricSubtasks">0/0</span>
+          </div>
+        </div>
+
+        <!-- Task Creation Chassis -->
+        <div class="task-create-chassis">
+          <div class="task-create-main-row">
+            <input type="text" class="task-create-input" id="taskMainInput" placeholder="Quelle tâche souhaites-tu accomplir ? (Appuie sur Entrée)">
+            <button class="btn-pill btn-pill-accent" onclick="handleQuickAddTask()" style="padding: 0.85rem 1.75rem;">
+              + AJOUTER
             </button>
-            <button class="btn-pill" id="btnResetTimer">
+          </div>
+
+          <div class="task-create-options-row">
+            <div class="task-options-selectors">
+              <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Options :</span>
+              <select class="tactile-select" id="taskPrioritySelect">
+                <option value="high">Priorité Haute 🔴</option>
+                <option value="medium" selected>Priorité Moyenne 🟡</option>
+                <option value="low">Priorité Basse ⚪</option>
+              </select>
+
+              <select class="tactile-select" id="taskCategorySelect">
+                <option value="deepwork" selected>🎯 Deep Work</option>
+                <option value="projet">🚀 Projet</option>
+                <option value="admin">📋 Admin</option>
+                <option value="perso">🌿 Perso</option>
+              </select>
+
+              <select class="tactile-select" id="taskPomoEstSelect">
+                <option value="1">1 cycle (25m)</option>
+                <option value="2" selected>2 cycles (50m)</option>
+                <option value="3">3 cycles (1h15)</option>
+                <option value="4">4 cycles (1h40)</option>
+              </select>
+            </div>
+
+            <button class="btn-pill" onclick="openTaskModal(null, document.getElementById('taskMainInput').value)" style="font-size: 0.78rem;">
+              + DÉTAILS, NOTES & SOUS-TÂCHES 📝
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters & Search Toolbar -->
+        <div class="tasks-toolbar-row">
+          <div class="filter-pills-bar">
+            <button class="filter-btn active" data-filter="all" onclick="setTaskFilter('all')">TOUTES</button>
+            <button class="filter-btn" data-filter="active" onclick="setTaskFilter('active')">EN COURS</button>
+            <button class="filter-btn" data-filter="completed" onclick="setTaskFilter('completed')">TERMINÉES</button>
+            <button class="filter-btn" data-filter="has_notes" onclick="setTaskFilter('has_notes')">📝 AVEC NOTES</button>
+            <button class="filter-btn" data-filter="deepwork" onclick="setTaskFilter('deepwork')">DEEP WORK</button>
+            <button class="filter-btn" data-filter="high" onclick="setTaskFilter('high')">🔴 HAUTE</button>
+          </div>
+
+          <div class="tasks-search-input-wrap">
+            <span style="color: var(--text-muted);">🔍</span>
+            <input type="text" id="taskSearchInput" placeholder="Rechercher une tâche ou note..." oninput="handleTaskSearch(this.value)">
+          </div>
+        </div>
+
+        <!-- Full Dynamic Tasks Cards List -->
+        <div class="tasks-full-list" id="tasksFullList"></div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW 3: FOCUS ONLY VIEW                        -->
+    <!-- ============================================== -->
+    <section class="view-panel" id="panel-focus">
+      <div class="tactile-card" style="max-width: 680px; margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+        <h2 class="card-heading" style="justify-content: center; margin-bottom: 2rem;">Focus Deep Work</h2>
+        
+        <div class="timer-hero-wrapper" style="margin-bottom: 2.5rem;">
+          <div class="horseshoe-timer-stage" style="transform: scale(1.15); margin-bottom: 2.5rem;">
+            <svg class="horseshoe-svg" viewBox="0 0 270 270">
+              <circle class="horseshoe-svg-track" cx="135" cy="135" r="115"></circle>
+              <circle class="horseshoe-svg-fill" id="timerArcFillFocus" cx="135" cy="135" r="115"></circle>
+            </svg>
+            <div class="horseshoe-inner-dish">
+              <span class="time-label-small">Time remaining</span>
+              <span class="time-display-huge" id="timerCountdownFocus">50:00</span>
+            </div>
+          </div>
+
+          <div class="timer-presets-row" style="margin-bottom: 1.5rem;">
+            <button class="timer-preset-btn" onclick="setTimerDuration(25, this)">25m</button>
+            <button class="timer-preset-btn active" onclick="setTimerDuration(50, this)">50m</button>
+            <button class="timer-preset-btn" onclick="setTimerDuration(90, this)">90m</button>
+            <button class="timer-preset-btn" onclick="setTimerDuration(5, this, true)">Pause 5m</button>
+          </div>
+
+          <div class="timer-control-buttons">
+            <button class="btn-pill btn-pill-accent" id="btnPlayPauseFocus" onclick="toggleTimer()">
+              <span id="playIconFocus">▶</span> <span id="playTextFocus">PLAY/PAUSE</span>
+            </button>
+            <button class="btn-pill" onclick="resetTimer()">
               ↺ RESET
             </button>
           </div>
         </div>
 
-        <!-- Today's Focus Tasks -->
-        <div>
-          <h3 class="tasks-section-title">Today's Focus Tasks</h3>
-          <div class="tasks-container">
-            <div class="task-row checked" onclick="toggleTaskRow(this)">
-              <div class="task-check-box checked"></div>
-              <span class="task-text">Finalize UX Mockups (4h)</span>
-            </div>
-            <div class="task-row checked" onclick="toggleTaskRow(this)">
-              <div class="task-check-box checked"></div>
-              <span class="task-text">Client Presentation Deck (2h)</span>
-            </div>
-            <div class="task-row" onclick="toggleTaskRow(this)">
-              <div class="task-check-box"></div>
-              <span class="task-text">Code Review</span>
-            </div>
-            <div class="task-row" onclick="toggleTaskRow(this)">
-              <div class="task-check-box"></div>
-              <span class="task-text">Team Sync</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- RIGHT COLUMN: Calendar Grid + Streak & Radio   -->
-      <!-- ============================================== -->
-      <div class="right-column">
-        <!-- Top: Weekly Overview Time-Blocking Grid -->
-        <section class="tactile-card calendar-card">
-          <div class="calendar-header">
-            <div>
-              <div class="calendar-title-label">Weekly Overview</div>
-              <div class="calendar-week-range">OCT 21 - 27</div>
-            </div>
-            <div class="calendar-nav-controls">
-              <button class="cal-nav-btn">‹</button>
-              <button class="cal-nav-btn">:</button>
-              <button class="cal-nav-btn">›</button>
-            </div>
-          </div>
-
-          <div class="timetable-grid">
-            <!-- Day Headers -->
-            <div></div>
-            <div class="timetable-header-cell">Mon</div>
-            <div class="timetable-header-cell">Tue</div>
-            <div class="timetable-header-cell">Wed</div>
-            <div class="timetable-header-cell">Thu</div>
-            <div class="timetable-header-cell">Fri</div>
-            <div class="timetable-header-cell">Sat</div>
-            <div class="timetable-header-cell">Sun</div>
-
-            <!-- Row 08:00 -->
-            <div class="timetable-time-label">08:00</div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-
-            <!-- Row 09:00 - 11:00 with Deep Work blocks -->
-            <div class="timetable-time-label">09:00</div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-deep-orange" style="height: 100%;">
-                DEEP WORK<br>09:00-13:00
-              </div>
-            </div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-deep-light" style="height: 100%;">
-                DEEP WORK<br>09:00-13:00
-              </div>
-            </div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-deep-light" style="height: 100%;">
-                DEEP WORK<br>09:00-13:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-deep-orange" style="height: 100%;">
-                DEEP WORK<br>09:00-13:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-
-            <!-- Row 11:00 -->
-            <div class="timetable-time-label">11:00</div>
-            <!-- cells spanned from row above -->
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-
-            <!-- Row 14:00 with Meetings -->
-            <div class="timetable-time-label">14:00</div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-meeting" style="height: 100%;">
-                MEETINGS<br>14:00-16:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-meeting" style="height: 100%;">
-                MEETINGS<br>14:00-16:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-meeting" style="height: 100%;">
-                MEETINGS<br>14:00-16:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-
-            <!-- Row 16:00 -->
-            <div class="timetable-time-label">16:00</div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-meeting" style="height: 100%;">
-                MEETINGS<br>14:00-16:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell" style="grid-row: span 2;">
-              <div class="schedule-block block-meeting" style="height: 100%;">
-                MEETINGS<br>14:00-16:00
-              </div>
-            </div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-            <div class="timetable-cell"></div>
-          </div>
-        </section>
-
-        <!-- Bottom Row: Weekly Streak + Lo-Fi Radio -->
-        <div class="bottom-cards-row">
-          <!-- Weekly Focus Streak -->
-          <section class="tactile-card">
-            <h3 class="calendar-title-label">Weekly Focus Streak</h3>
-            <div class="streak-dots-row">
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle active"></div>
-                <span class="streak-day-name">Mon</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle active"></div>
-                <span class="streak-day-name">Tue</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle active"></div>
-                <span class="streak-day-name">Wed</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle active"></div>
-                <span class="streak-day-name">Thu</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle glowing active"></div>
-                <span class="streak-day-name">Fri</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle"></div>
-                <span class="streak-day-name">Sat</span>
-              </div>
-              <div class="streak-day-item" onclick="toggleDot(this)">
-                <div class="streak-dot-circle"></div>
-                <span class="streak-day-name">Sun</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Lo-Fi Radio -->
-          <section class="tactile-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h3 class="calendar-title-label">Lo-Fi Radio</h3>
-              <span style="font-size: 0.9rem; color: var(--text-muted); cursor: pointer;">•••</span>
-            </div>
-
-            <div class="radio-slider-row">
-              <span class="radio-slider-name">Volume</span>
-              <div class="radio-groove-track" onclick="moveThumb(this, event)">
-                <div class="radio-groove-fill" style="width: 65%;"></div>
-                <div class="radio-groove-thumb" style="left: 65%;"></div>
-              </div>
-            </div>
-
-            <div class="radio-slider-row">
-              <span class="radio-slider-name">Seek</span>
-              <div class="radio-groove-track" onclick="moveThumb(this, event)">
-                <div class="radio-groove-fill" style="width: 40%;"></div>
-                <div class="radio-groove-thumb" style="left: 40%;"></div>
-              </div>
-            </div>
-
-            <div class="radio-footer-controls">
-              <div class="radio-buttons">
-                <button class="btn-radio-mini" title="Précédent">|◀</button>
-                <button class="btn-radio-mini" id="btnRadioPlay" style="font-weight: 800;">▶</button>
-                <button class="btn-radio-mini" title="Suivant">▶|</button>
-              </div>
-              <span class="radio-track-title">Chillhop Lofi Beats</span>
-            </div>
-          </section>
+        <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted);" id="focusActiveTaskText">
+          Session libre — Aucune tâche sélectionnée
         </div>
       </div>
-    </main>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW 4: CALENDAR / PLANNER VIEW                -->
+    <!-- ============================================== -->
+    <section class="view-panel" id="panel-calendar">
+      <div class="tactile-card">
+        <div class="calendar-header">
+          <div>
+            <div class="calendar-title-label">Weekly Time-Blocking & Planning</div>
+            <div class="calendar-week-range" id="calendarDateRangeExtended">OCT 14 - 20 • SEMAINE ACTIVE</div>
+          </div>
+          <div class="calendar-nav-controls">
+            <button class="cal-nav-btn" onclick="prevWeek()">‹</button>
+            <button class="cal-nav-btn" onclick="resetWeek()">•</button>
+            <button class="cal-nav-btn" onclick="nextWeek()">›</button>
+          </div>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Planifie tes créneaux de Deep Work pour éliminer la charge mentale et protéger tes heures de concentration intense.
+        </p>
+
+        <div class="timetable-grid">
+          <div></div>
+          <div class="timetable-header-cell">Lun</div>
+          <div class="timetable-header-cell">Mar</div>
+          <div class="timetable-header-cell">Mer</div>
+          <div class="timetable-header-cell">Jeu</div>
+          <div class="timetable-header-cell">Ven</div>
+          <div class="timetable-header-cell">Sam</div>
+          <div class="timetable-header-cell">Dim</div>
+
+          <div class="timetable-time-label">08:00</div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-deep-orange" style="height: 100%;">
+              DEEP WORK<br>08:00-10:00
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-deep-light" style="height: 100%;">
+              PROJET ARCHI<br>08:00-10:00
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+
+          <div class="timetable-time-label">09:00</div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+
+          <div class="timetable-time-label">10:00</div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-deep-light" style="height: 100%;">
+              PROJET CORE<br>10:00-12:00
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-deep-orange" style="height: 100%;">
+              DEEP WORK<br>10:00-12:30
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+
+          <div class="timetable-time-label">11:00</div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+
+          <div class="timetable-time-label">14:00</div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-meeting" style="height: 100%;">
+              TEAM SYNC<br>14:00-15:30
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-meeting" style="height: 100%;">
+              CLIENT DECK<br>14:00-15:30
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-meeting" style="height: 100%;">
+              REVUE DESIGN<br>14:00-15:30
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+
+          <div class="timetable-time-label">16:00</div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell" style="grid-row: span 2;">
+            <div class="schedule-block block-deep-orange" style="height: 100%;">
+              FOCUS DEV<br>16:00-18:00
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW 5: ANALYTICS / STATS VIEW                 -->
+    <!-- ============================================== -->
+    <section class="view-panel" id="panel-analytics">
+      <div class="tactile-card">
+        <h2 class="card-heading">Productivité & Séries</h2>
+        <div class="bottom-cards-row" style="margin-bottom: 2rem;">
+          <div style="background: var(--card-inner); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow-inset);">
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Temps Deep Work Total</div>
+            <div style="font-size: 2.4rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--accent); margin-top: 0.5rem;">18h 45m</div>
+            <span style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 600;">+24% vs semaine précédente</span>
+          </div>
+          <div style="background: var(--card-inner); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow-inset);">
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Série Actuelle</div>
+            <div style="font-size: 2.4rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--text-title); margin-top: 0.5rem;">5 jours 🔥</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Record personnel : 12 jours</span>
+          </div>
+        </div>
+
+        <h3 class="tasks-section-title" style="margin-bottom: 1rem;">Répartition par Catégorie</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.35rem;">
+              <span>🎯 Deep Work</span>
+              <span>12h 15m (65%)</span>
+            </div>
+            <div class="modal-subtasks-progress-bar">
+              <div class="modal-subtasks-progress-fill" style="width: 65%;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.35rem;">
+              <span>🚀 Projets & Client</span>
+              <span>4h 30m (24%)</span>
+            </div>
+            <div class="modal-subtasks-progress-bar">
+              <div class="modal-subtasks-progress-fill" style="width: 24%; background: var(--text-body);"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.35rem;">
+              <span>📋 Admin & Revues</span>
+              <span>2h 00m (11%)</span>
+            </div>
+            <div class="modal-subtasks-progress-bar">
+              <div class="modal-subtasks-progress-fill" style="width: 11%; background: var(--text-muted);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
+  <!-- ========================================================
+       TASK DETAIL & NOTES MODAL DIALOG
+       ======================================================== -->
+  <div class="modal-backdrop" id="taskDetailModal">
+    <div class="modal-tactile-dialog">
+      <div class="modal-header-row">
+        <div class="modal-title-wrap">
+          <div class="modal-badge-square">⚡</div>
+          <div>
+            <h3 class="modal-title-text" id="modalHeadingTitle">Détail de la Tâche & Notes</h3>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Édite tes notes, tes sous-étapes et planifie ton focus</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeTaskModal()" title="Fermer (Échap)">✕</button>
+      </div>
+
+      <input type="hidden" id="modalEditingTaskId" value="">
+
+      <!-- Title Input -->
+      <div class="form-group-block">
+        <label class="form-label-tactile">Titre de la tâche</label>
+        <input type="text" id="modalInputTitle" class="modal-title-input" placeholder="ex: Finaliser la présentation stratégique..." autocomplete="off">
+      </div>
+
+      <!-- Priority, Category, Pomodoros -->
+      <div class="modal-grid-options">
+        <div>
+          <label class="form-label-tactile">Catégorie</label>
+          <select class="tactile-select" id="modalSelectCat" style="width: 100%;">
+            <option value="deepwork">🎯 Deep Work</option>
+            <option value="projet">🚀 Projet</option>
+            <option value="admin">📋 Admin</option>
+            <option value="perso">🌿 Perso</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label-tactile">Priorité</label>
+          <select class="tactile-select" id="modalSelectPrio" style="width: 100%;">
+            <option value="high">🔴 Haute</option>
+            <option value="medium" selected>🟡 Moyenne</option>
+            <option value="low">⚪ Basse</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label-tactile">Cycles Estimés</label>
+          <select class="tactile-select" id="modalSelectPomos" style="width: 100%;">
+            <option value="1">1 cycle (25m)</option>
+            <option value="2" selected>2 cycles (50m)</option>
+            <option value="3">3 cycles (1h15)</option>
+            <option value="4">4 cycles (1h40)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DEDICATED NOTES SECTION -->
+      <div class="modal-notes-section">
+        <div class="modal-notes-header">
+          <div style="display: flex; align-items: center; gap: 0.45rem;">
+            <span style="font-size: 1rem;">📝</span>
+            <label class="form-label-tactile" style="margin-bottom: 0;">Espace de Notes & Contexte</label>
+          </div>
+          <div class="modal-notes-status" id="modalNotesStatus">
+            <span class="notes-dot"></span> <span id="notesStatusLabel">Enregistré</span>
+          </div>
+        </div>
+
+        <!-- Notes Formatting Toolbar -->
+        <div class="notes-toolbar">
+          <button type="button" class="note-action-btn" onclick="insertNoteSymbol('• ')">• Puce</button>
+          <button type="button" class="note-action-btn" onclick="insertNoteSymbol('☑ ')">☑ Checklist</button>
+          <button type="button" class="note-action-btn" onclick="insertNoteDate()">📅 Date</button>
+          <button type="button" class="note-action-btn" onclick="insertNoteSymbol('🔗 [Lien](https://)')">🔗 Lien</button>
+          <button type="button" class="note-action-btn" onclick="clearNotes()" style="color: var(--accent-rose);">Effacer</button>
+        </div>
+
+        <!-- Textarea with Live Auto-Save -->
+        <textarea id="modalNotesTextarea" class="modal-notes-textarea" placeholder="Note ici toutes les informations, réflexions, consignes, liens ou étapes clés pour cette tâche..." oninput="handleNotesAutoSave()"></textarea>
+      </div>
+
+      <!-- SUBTASKS BUILDER & PROGRESS -->
+      <div class="modal-subtasks-section">
+        <div class="modal-subtasks-header">
+          <div style="display: flex; align-items: center; gap: 0.45rem;">
+            <span style="font-size: 1rem;">📋</span>
+            <label class="form-label-tactile" style="margin-bottom: 0;">Sous-tâches & Décomposition</label>
+          </div>
+          <span class="modal-subtasks-progress-text" id="modalSubtasksPctText">0%</span>
+        </div>
+
+        <div class="modal-subtasks-progress-bar">
+          <div class="modal-subtasks-progress-fill" id="modalSubtasksBarFill" style="width: 0%;"></div>
+        </div>
+
+        <div class="modal-subtasks-input-row">
+          <input type="text" class="modal-subtask-input" id="modalNewSubtaskInput" placeholder="Ajouter une sous-tâche concrète... (Entrée)" onkeydown="if(event.key==='Enter'){event.preventDefault();addModalSubtask();}">
+          <button class="btn-pill" onclick="addModalSubtask()" style="padding: 0.6rem 1rem; font-size: 0.78rem;">+ AJOUTER</button>
+        </div>
+
+        <div class="modal-subtasks-list" id="modalSubtasksList"></div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="modal-footer-row">
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-pill" id="btnModalDeleteTask" onclick="deleteCurrentModalTask()" style="color: var(--accent-rose); font-size: 0.78rem;">
+            🗑️ SUPPRIMER
+          </button>
+          <button class="btn-pill btn-pill-accent" id="btnModalFocusTask" onclick="startFocusOnModalTask()" style="font-size: 0.78rem;">
+            🎯 LANCER FOCUS
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.65rem;">
+          <button class="btn-pill" onclick="closeTaskModal()">FERMER</button>
+          <button class="btn-pill btn-pill-accent" onclick="saveTaskModal()">ENREGISTRER ⚡</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCEDURAL WEB AUDIO ENGINE -->
+  <script src="js/audio.js"></script>
+
+  <!-- SCRIPT LOGIC (Fully Operational) -->
   <script>
-    // Theme Switcher (Orange vs Blue)
+    // --- Data Storage State ---
+    const STORAGE_KEY = 'FLOWSTATE_DATA_V3';
+
+    const DEFAULT_TASKS = [
+      {
+        id: 'task_1',
+        title: 'Finaliser les maquettes UX & UI',
+        priority: 'high',
+        tag: 'deepwork',
+        estimatedPomos: 3,
+        completedPomos: 1,
+        completed: true,
+        notes: "• Définir l'architecture modulaire et les composants porcelaine Braun\n• Tester le contraste sur papier carnet à points\n• Référence : Dieter Rams - Les 10 principes du bon design",
+        subtasks: [
+          { id: 'sub_1', title: 'Schématiser le flux utilisateur', completed: true },
+          { id: 'sub_2', title: 'Valider les contrastes de gris', completed: true },
+          { id: 'sub_3', title: 'Intégrer les switchs de thèmes', completed: true }
+        ]
+      },
+      {
+        id: 'task_2',
+        title: 'Préparer la présentation pour le point d’équipe',
+        priority: 'high',
+        tag: 'projet',
+        estimatedPomos: 2,
+        completedPomos: 1,
+        completed: false,
+        notes: "• 5 slides max : Objectifs, Avancement, Blocages, Next steps\n• Prévoir 10 min de démo live de la nouvelle DA",
+        subtasks: [
+          { id: 'sub_4', title: 'Rédiger les points clés', completed: true },
+          { id: 'sub_5', title: 'Sélectionner les captures d’écran', completed: false }
+        ]
+      },
+      {
+        id: 'task_3',
+        title: 'Revue de code & optimisations PWA',
+        priority: 'medium',
+        tag: 'deepwork',
+        estimatedPomos: 2,
+        completedPomos: 0,
+        completed: false,
+        notes: "Vérifier le Service Worker v10 et le cache-busting pour assurer la mise à jour instantanée.",
+        subtasks: []
+      },
+      {
+        id: 'task_4',
+        title: 'Synchronisation Cloud Supabase',
+        priority: 'low',
+        tag: 'admin',
+        estimatedPomos: 1,
+        completedPomos: 0,
+        completed: false,
+        notes: "Vérifier la persistance des tâches et des sous-tâches.",
+        subtasks: []
+      }
+    ];
+
+    let appTasks = loadTasks();
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let currentModalSubtasks = [];
+    let notesAutoSaveTimeout = null;
+
+    function loadTasks() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return DEFAULT_TASKS;
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appTasks));
+      renderDashboardTasks();
+      renderFullTasksList();
+    }
+
+    // --- Tab Switching ---
+    function switchNavTab(tabName) {
+      document.querySelectorAll('.nav-tab-item').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-tab') === tabName);
+      });
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      const activePanel = document.getElementById(`panel-${tabName}`);
+      if (activePanel) activePanel.classList.add('active');
+    }
+
+    // --- Theme Switcher (Orange vs Blue) ---
     const btnOrange = document.getElementById('btnThemeOrange');
     const btnBlue = document.getElementById('btnThemeBlue');
 
@@ -970,19 +2349,30 @@
       document.documentElement.setAttribute('data-theme', 'orange');
       btnOrange.classList.add('active');
       btnBlue.classList.remove('active');
+      localStorage.setItem('flowstate_theme', 'orange');
     });
 
     btnBlue.addEventListener('click', () => {
       document.documentElement.setAttribute('data-theme', 'blue');
       btnBlue.classList.add('active');
       btnOrange.classList.remove('active');
+      localStorage.setItem('flowstate_theme', 'blue');
     });
 
-    // Interactive Horseshoe Timer
+    // Restore theme
+    const savedTheme = localStorage.getItem('flowstate_theme') || 'orange';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    if (savedTheme === 'blue') {
+      btnBlue.classList.add('active');
+      btnOrange.classList.remove('active');
+    }
+
+    // --- Horseshoe Sculptural Timer Engine ---
     let totalSec = 50 * 60;
     let remainingSec = totalSec;
     let isRunning = false;
     let timerInterval = null;
+    let activeTimerTask = null;
 
     const timerText = document.getElementById('timerCountdownText');
     const timerArc = document.getElementById('timerArcFill');
@@ -990,25 +2380,45 @@
     const btnReset = document.getElementById('btnResetTimer');
     const playIcon = document.getElementById('playIcon');
     const playText = document.getElementById('playText');
-
-    // Arc dasharray length: 590
     const maxDash = 590;
 
     function renderTimer() {
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
-      timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const str = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      if (timerText) timerText.textContent = str;
+      const focusText = document.getElementById('timerCountdownFocus');
+      if (focusText) focusText.textContent = str;
 
-      // Progress offset
       const progress = (totalSec - remainingSec) / totalSec;
-      timerArc.style.strokeDashoffset = maxDash * (1 - progress);
+      const offset = maxDash * (1 - progress);
+      if (timerArc) timerArc.style.strokeDashoffset = offset;
+      const arcFocus = document.getElementById('timerArcFillFocus');
+      if (arcFocus) arcFocus.style.strokeDashoffset = offset;
     }
 
-    btnPlay.addEventListener('click', () => {
-      isRunning = !isRunning;
+    function setTimerDuration(mins, btn, isBreak = false) {
+      document.querySelectorAll('.timer-preset-btn').forEach(b => {
+        if (btn && b.textContent.trim() === btn.textContent.trim()) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      totalSec = mins * 60;
+      remainingSec = totalSec;
       if (isRunning) {
-        playIcon.textContent = '❚❚';
-        playText.textContent = 'PAUSE';
+        clearInterval(timerInterval);
+        isRunning = false;
+        updatePlayButtons(false);
+      }
+      renderTimer();
+    }
+
+    function toggleTimer() {
+      isRunning = !isRunning;
+      updatePlayButtons(isRunning);
+      if (isRunning) {
         timerInterval = setInterval(() => {
           if (remainingSec > 0) {
             remainingSec--;
@@ -1016,59 +2426,665 @@
           } else {
             clearInterval(timerInterval);
             isRunning = false;
-            playIcon.textContent = '▶';
-            playText.textContent = 'PLAY/PAUSE';
+            updatePlayButtons(false);
+            if (window.audioEngine) {
+              try { window.audioEngine.playZenBowl(); } catch (_) {}
+            }
+            alert('🎉 Session Deep Work terminée ! Prends une pause bien méritée.');
           }
         }, 1000);
       } else {
         clearInterval(timerInterval);
-        playIcon.textContent = '▶';
-        playText.textContent = 'PLAY/PAUSE';
       }
-    });
+    }
 
-    btnReset.addEventListener('click', () => {
+    function resetTimer() {
       clearInterval(timerInterval);
       isRunning = false;
       remainingSec = totalSec;
-      playIcon.textContent = '▶';
-      playText.textContent = 'PLAY/PAUSE';
+      updatePlayButtons(false);
       renderTimer();
-    });
-
-    // Interactive Checkboxes
-    function toggleTaskRow(row) {
-      const isChecked = row.classList.toggle('checked');
-      const box = row.querySelector('.task-check-box');
-      box.classList.toggle('checked', isChecked);
     }
 
-    // Interactive Streak Dots
+    function updatePlayButtons(playing) {
+      if (playIcon) playIcon.textContent = playing ? '❚❚' : '▶';
+      if (playText) playText.textContent = playing ? 'PAUSE' : 'PLAY/PAUSE';
+      const playIconFocus = document.getElementById('playIconFocus');
+      const playTextFocus = document.getElementById('playTextFocus');
+      if (playIconFocus) playIconFocus.textContent = playing ? '❚❚' : '▶';
+      if (playTextFocus) playTextFocus.textContent = playing ? 'PAUSE' : 'PLAY/PAUSE';
+    }
+
+    if (btnPlay) btnPlay.addEventListener('click', toggleTimer);
+    if (btnReset) btnReset.addEventListener('click', resetTimer);
+
+    // --- Tasks Rendering: Dashboard View ---
+    function renderDashboardTasks() {
+      const container = document.getElementById('dashboardTasksList');
+      if (!container) return;
+
+      container.innerHTML = appTasks.map(task => {
+        const hasNotes = task.notes && task.notes.trim().length > 0;
+        const totalSubs = task.subtasks ? task.subtasks.length : 0;
+        const doneSubs = task.subtasks ? task.subtasks.filter(s => s.completed).length : 0;
+
+        return `
+          <div class="task-row ${task.completed ? 'checked' : ''}" onclick="openTaskModal('${task.id}')">
+            <div class="task-row-left">
+              <div class="task-check-box ${task.completed ? 'checked' : ''}" onclick="toggleTaskCompleted('${task.id}', event)"></div>
+              <span class="task-text">${escapeHtml(task.title)}</span>
+            </div>
+            <div class="task-row-badges">
+              ${hasNotes ? `<span class="task-row-note-icon" title="Contient des notes">📝</span>` : ''}
+              ${totalSubs > 0 ? `<span class="task-row-sub-pill">${doneSubs}/${totalSubs}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleDashboardQuickAdd() {
+      const input = document.getElementById('dashboardQuickInput');
+      if (!input || !input.value.trim()) return;
+      const newTask = {
+        id: 'task_' + Date.now(),
+        title: input.value.trim(),
+        priority: 'medium',
+        tag: 'deepwork',
+        estimatedPomos: 2,
+        completedPomos: 0,
+        completed: false,
+        notes: '',
+        subtasks: []
+      };
+      appTasks.unshift(newTask);
+      saveTasks();
+      input.value = '';
+    }
+
+    document.getElementById('dashboardQuickInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleDashboardQuickAdd();
+      }
+    });
+
+    // --- Tasks Rendering: Dedicated Full View ---
+    function getFilteredTasks() {
+      let list = [...appTasks];
+      if (currentFilter === 'active') list = list.filter(t => !t.completed);
+      else if (currentFilter === 'completed') list = list.filter(t => t.completed);
+      else if (currentFilter === 'has_notes') list = list.filter(t => t.notes && t.notes.trim().length > 0);
+      else if (currentFilter === 'deepwork') list = list.filter(t => t.tag === 'deepwork');
+      else if (currentFilter === 'high') list = list.filter(t => t.priority === 'high');
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(t => (t.title && t.title.toLowerCase().includes(q)) || (t.notes && t.notes.toLowerCase().includes(q)));
+      }
+      return list;
+    }
+
+    function renderFullTasksList() {
+      const container = document.getElementById('tasksFullList');
+      if (!container) return;
+
+      // Update metrics ribbon
+      const total = appTasks.length;
+      const active = appTasks.filter(t => !t.completed).length;
+      const done = appTasks.filter(t => t.completed).length;
+      let totalSubs = 0, doneSubs = 0;
+      appTasks.forEach(t => {
+        if (t.subtasks) {
+          totalSubs += t.subtasks.length;
+          doneSubs += t.subtasks.filter(s => s.completed).length;
+        }
+      });
+
+      if (document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = total;
+      if (document.getElementById('metricActive')) document.getElementById('metricActive').textContent = active;
+      if (document.getElementById('metricDone')) document.getElementById('metricDone').textContent = done;
+      if (document.getElementById('metricSubtasks')) document.getElementById('metricSubtasks').textContent = `${doneSubs}/${totalSubs}`;
+
+      const filtered = getFilteredTasks();
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="background: var(--card-bg); box-shadow: var(--shadow-outer); border-radius: 20px; padding: 3rem 1.5rem; text-align: center; color: var(--text-muted);">
+            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🍃</div>
+            <div style="font-weight: 700; color: var(--text-title);">Aucune tâche ne correspond à ces critères.</div>
+            <div style="font-size: 0.8rem; margin-top: 0.25rem;">Ajoutes-en une ci-dessus ou change de filtre !</div>
+          </div>
+        `;
+        return;
+      }
+
+      const prioConfig = {
+        high: { label: 'Haute', class: 'prio-high' },
+        medium: { label: 'Moyenne', class: 'prio-medium' },
+        low: { label: 'Basse', class: 'prio-low' }
+      };
+
+      const tagLabels = {
+        deepwork: '🎯 Deep Work',
+        projet: '🚀 Projet',
+        admin: '📋 Admin',
+        perso: '🌿 Perso'
+      };
+
+      container.innerHTML = filtered.map(task => {
+        const prio = prioConfig[task.priority] || prioConfig.medium;
+        const tagText = tagLabels[task.tag] || '🎯 Deep Work';
+        const hasNotes = task.notes && task.notes.trim().length > 0;
+
+        let notesPreview = '';
+        if (hasNotes) {
+          const firstLine = task.notes.trim().split('\n')[0].replace(/^[•\-\*☑]\s*/, '');
+          notesPreview = `
+            <div class="task-notes-preview-box">
+              <span>📝</span>
+              <span class="task-notes-preview-text">${escapeHtml(firstLine)}</span>
+            </div>
+          `;
+        }
+
+        const subtasks = task.subtasks || [];
+        const totalS = subtasks.length;
+        const doneS = subtasks.filter(s => s.completed).length;
+        const pct = totalS > 0 ? Math.round((doneS / totalS) * 100) : 0;
+
+        const subtasksHtml = totalS > 0 ? `
+          <div class="task-card-subtasks-container" onclick="event.stopPropagation()">
+            <div class="subtasks-header-row">
+              <span class="subtasks-label">Sous-tâches : ${doneS}/${totalS} (${pct}%)</span>
+              <div class="subtasks-progress-groove">
+                <div class="subtasks-progress-bar-fill" style="width: ${pct}%"></div>
+              </div>
+            </div>
+            <div class="subtask-card-list">
+              ${subtasks.map(s => `
+                <div class="subtask-card-item ${s.completed ? 'completed' : ''}" onclick="toggleInlineSubtask('${task.id}', '${s.id}', event)">
+                  <div class="subtask-mini-check ${s.completed ? 'checked' : ''}"></div>
+                  <span>${escapeHtml(s.title)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : '';
+
+        return `
+          <div class="task-card-item ${task.completed ? 'completed' : ''}" onclick="openTaskModal('${task.id}')">
+            <!-- Checkbox -->
+            <div class="task-check-box ${task.completed ? 'checked' : ''}" onclick="toggleTaskCompleted('${task.id}', event)" style="margin-top: 3px;"></div>
+
+            <!-- Body -->
+            <div class="task-card-body">
+              <div class="task-card-title-row">
+                <span class="task-card-title">${escapeHtml(task.title)}</span>
+                ${hasNotes ? `<span class="task-notes-badge">📝 Notes</span>` : ''}
+              </div>
+
+              ${notesPreview}
+
+              <!-- Badges -->
+              <div class="task-card-meta">
+                <span class="tag-chip ${task.tag}">${tagText}</span>
+                <span class="priority-badge ${prio.class}">
+                  <span class="priority-indicator-dot"></span>
+                  ${prio.label}
+                </span>
+                <span class="pomo-badge">⏳ ${task.completedPomos || 0}/${task.estimatedPomos || 1}</span>
+
+                <button class="btn-quick-add-subtask" onclick="quickAddSubtaskPrompt('${task.id}', event)">
+                  + Sous-tâche
+                </button>
+              </div>
+
+              ${subtasksHtml}
+            </div>
+
+            <!-- Action buttons -->
+            <div class="task-card-actions" onclick="event.stopPropagation()">
+              ${!task.completed ? `
+                <button class="btn-action-round" onclick="startFocusOnTask('${task.id}', event)" title="Lancer une session Deep Work">
+                  🎯
+                </button>
+              ` : ''}
+              <button class="btn-action-round" onclick="openTaskModal('${task.id}')" title="Ouvrir les notes">
+                📝
+              </button>
+              <button class="btn-action-round" onclick="deleteTaskDirect('${task.id}', event)" style="color: var(--accent-rose);" title="Supprimer">
+                ✕
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleQuickAddTask() {
+      const input = document.getElementById('taskMainInput');
+      if (!input || !input.value.trim()) return;
+
+      const priority = document.getElementById('taskPrioritySelect')?.value || 'medium';
+      const tag = document.getElementById('taskCategorySelect')?.value || 'deepwork';
+      const pomos = parseInt(document.getElementById('taskPomoEstSelect')?.value, 10) || 2;
+
+      const newTask = {
+        id: 'task_' + Date.now(),
+        title: input.value.trim(),
+        priority,
+        tag,
+        estimatedPomos: pomos,
+        completedPomos: 0,
+        completed: false,
+        notes: '',
+        subtasks: []
+      };
+
+      appTasks.unshift(newTask);
+      saveTasks();
+      input.value = '';
+    }
+
+    document.getElementById('taskMainInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleQuickAddTask();
+      }
+    });
+
+    function setTaskFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-filter') === filter);
+      });
+      renderFullTasksList();
+    }
+
+    function handleTaskSearch(query) {
+      searchQuery = query.trim();
+      renderFullTasksList();
+    }
+
+    function toggleTaskCompleted(taskId, e) {
+      if (e) e.stopPropagation();
+      const task = appTasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.completed = !task.completed;
+      if (task.completed && window.audioEngine) {
+        try { window.audioEngine.playTaskCompletion(); } catch (_) {}
+      }
+      saveTasks();
+    }
+
+    function deleteTaskDirect(taskId, e) {
+      if (e) e.stopPropagation();
+      if (confirm('Supprimer cette tâche ?')) {
+        appTasks = appTasks.filter(t => t.id !== taskId);
+        saveTasks();
+      }
+    }
+
+    function toggleInlineSubtask(taskId, subId, e) {
+      if (e) e.stopPropagation();
+      const task = appTasks.find(t => t.id === taskId);
+      if (!task || !task.subtasks) return;
+      const sub = task.subtasks.find(s => s.id === subId);
+      if (sub) {
+        sub.completed = !sub.completed;
+        saveTasks();
+      }
+    }
+
+    function quickAddSubtaskPrompt(taskId, e) {
+      if (e) e.stopPropagation();
+      const task = appTasks.find(t => t.id === taskId);
+      if (!task) return;
+      const subTitle = prompt(`Ajouter une sous-tâche pour "${task.title}" :`);
+      if (subTitle && subTitle.trim()) {
+        if (!task.subtasks) task.subtasks = [];
+        task.subtasks.push({
+          id: 'sub_' + Date.now(),
+          title: subTitle.trim(),
+          completed: false
+        });
+        saveTasks();
+      }
+    }
+
+    function startFocusOnTask(taskId, e) {
+      if (e) e.stopPropagation();
+      const task = appTasks.find(t => t.id === taskId);
+      if (!task) return;
+      activeTimerTask = task;
+      const intentionLabel = document.getElementById('activeTaskIntentionLabel');
+      if (intentionLabel) intentionLabel.textContent = `🎯 ${task.title}`;
+      const focusText = document.getElementById('focusActiveTaskText');
+      if (focusText) focusText.textContent = `🎯 Session liée à : "${task.title}"`;
+      switchNavTab('dashboard');
+    }
+
+    // --- TASK DETAIL & NOTES MODAL LOGIC ---
+    function openTaskModal(taskId = null, prefilledTitle = '') {
+      const modal = document.getElementById('taskDetailModal');
+      if (!modal) return;
+
+      const heading = document.getElementById('modalHeadingTitle');
+      const inputTitle = document.getElementById('modalInputTitle');
+      const selectCat = document.getElementById('modalSelectCat');
+      const selectPrio = document.getElementById('modalSelectPrio');
+      const selectPomos = document.getElementById('modalSelectPomos');
+      const notesArea = document.getElementById('modalNotesTextarea');
+      const hiddenId = document.getElementById('modalEditingTaskId');
+      const btnDelete = document.getElementById('btnModalDeleteTask');
+      const btnFocus = document.getElementById('btnModalFocusTask');
+
+      if (taskId) {
+        const task = appTasks.find(t => t.id === taskId);
+        if (task) {
+          hiddenId.value = task.id;
+          heading.textContent = "Détail de la Tâche & Notes";
+          inputTitle.value = task.title || '';
+          selectCat.value = task.tag || 'deepwork';
+          selectPrio.value = task.priority || 'medium';
+          selectPomos.value = task.estimatedPomos || 2;
+          notesArea.value = task.notes || '';
+          currentModalSubtasks = task.subtasks ? JSON.parse(JSON.stringify(task.subtasks)) : [];
+          if (btnDelete) btnDelete.style.display = 'inline-flex';
+          if (btnFocus) btnFocus.style.display = 'inline-flex';
+        }
+      } else {
+        hiddenId.value = '';
+        heading.textContent = "Nouvelle Tâche & Espace de Notes";
+        inputTitle.value = prefilledTitle || '';
+        selectCat.value = 'deepwork';
+        selectPrio.value = 'medium';
+        selectPomos.value = 2;
+        notesArea.value = '';
+        currentModalSubtasks = [];
+        if (btnDelete) btnDelete.style.display = 'none';
+        if (btnFocus) btnFocus.style.display = 'none';
+      }
+
+      renderModalSubtasks();
+      modal.classList.add('open');
+      setTimeout(() => inputTitle.focus(), 80);
+    }
+
+    function closeTaskModal() {
+      const modal = document.getElementById('taskDetailModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    document.getElementById('taskDetailModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'taskDetailModal') closeTaskModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeTaskModal();
+    });
+
+    // Notes auto-save handler
+    function handleNotesAutoSave() {
+      const statusLabel = document.getElementById('notesStatusLabel');
+      if (statusLabel) statusLabel.textContent = 'En cours...';
+
+      clearTimeout(notesAutoSaveTimeout);
+      notesAutoSaveTimeout = setTimeout(() => {
+        const editingId = document.getElementById('modalEditingTaskId').value;
+        const notesArea = document.getElementById('modalNotesTextarea');
+        if (editingId) {
+          const task = appTasks.find(t => t.id === editingId);
+          if (task && notesArea) {
+            task.notes = notesArea.value;
+            saveTasks();
+          }
+        }
+        if (statusLabel) statusLabel.textContent = 'Enregistré';
+      }, 350);
+    }
+
+    function insertNoteSymbol(symbol) {
+      const textarea = document.getElementById('modalNotesTextarea');
+      if (!textarea) return;
+      const start = textarea.selectionStart || 0;
+      const end = textarea.selectionEnd || 0;
+      const val = textarea.value;
+      const needsNL = (start > 0 && val[start - 1] !== '\n');
+      const ins = (needsNL ? '\n' : '') + symbol;
+      textarea.value = val.substring(0, start) + ins + val.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + ins.length;
+      textarea.focus();
+      handleNotesAutoSave();
+    }
+
+    function insertNoteDate() {
+      const d = new Date();
+      const dateStr = `[${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}] `;
+      insertNoteSymbol(dateStr);
+    }
+
+    function clearNotes() {
+      const textarea = document.getElementById('modalNotesTextarea');
+      if (!textarea) return;
+      if (!textarea.value.trim() || confirm('Vider le bloc de notes ?')) {
+        textarea.value = '';
+        handleNotesAutoSave();
+      }
+    }
+
+    // Modal Subtasks logic
+    function renderModalSubtasks() {
+      const listEl = document.getElementById('modalSubtasksList');
+      const pctEl = document.getElementById('modalSubtasksPctText');
+      const barFill = document.getElementById('modalSubtasksBarFill');
+      if (!listEl) return;
+
+      const total = currentModalSubtasks.length;
+      const done = currentModalSubtasks.filter(s => s.completed).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      if (pctEl) pctEl.textContent = `${done}/${total} (${pct}%)`;
+      if (barFill) barFill.style.width = `${pct}%`;
+
+      if (total === 0) {
+        listEl.innerHTML = `
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 0.5rem;">
+            Aucune sous-tâche pour le moment. Ajoutes-en une ci-dessus !
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = currentModalSubtasks.map((st, idx) => `
+        <div class="modal-subtask-row ${st.completed ? 'completed' : ''}">
+          <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; flex: 1;">
+            <input type="checkbox" ${st.completed ? 'checked' : ''} onchange="toggleModalSubtask(${idx})" style="accent-color: var(--accent);">
+            <span>${escapeHtml(st.title)}</span>
+          </label>
+          <button type="button" onclick="removeModalSubtask(${idx})" style="border: none; background: transparent; color: var(--accent-rose); font-weight: 800; cursor: pointer; padding: 0.2rem 0.4rem;">
+            ✕
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addModalSubtask() {
+      const input = document.getElementById('modalNewSubtaskInput');
+      if (!input || !input.value.trim()) return;
+      currentModalSubtasks.push({
+        id: 'sub_' + Date.now(),
+        title: input.value.trim(),
+        completed: false
+      });
+      input.value = '';
+      renderModalSubtasks();
+      input.focus();
+    }
+
+    function toggleModalSubtask(idx) {
+      if (currentModalSubtasks[idx]) {
+        currentModalSubtasks[idx].completed = !currentModalSubtasks[idx].completed;
+        renderModalSubtasks();
+      }
+    }
+
+    function removeModalSubtask(idx) {
+      currentModalSubtasks.splice(idx, 1);
+      renderModalSubtasks();
+    }
+
+    function saveTaskModal() {
+      const titleInput = document.getElementById('modalInputTitle');
+      if (!titleInput || !titleInput.value.trim()) {
+        alert('Veuillez saisir un titre pour la tâche.');
+        return;
+      }
+
+      const editingId = document.getElementById('modalEditingTaskId').value;
+      const priority = document.getElementById('modalSelectPrio').value;
+      const tag = document.getElementById('modalSelectCat').value;
+      const pomos = parseInt(document.getElementById('modalSelectPomos').value, 10) || 2;
+      const notes = document.getElementById('modalNotesTextarea').value;
+
+      if (editingId) {
+        const task = appTasks.find(t => t.id === editingId);
+        if (task) {
+          task.title = titleInput.value.trim();
+          task.priority = priority;
+          task.tag = tag;
+          task.estimatedPomos = pomos;
+          task.notes = notes;
+          task.subtasks = currentModalSubtasks;
+        }
+      } else {
+        const newTask = {
+          id: 'task_' + Date.now(),
+          title: titleInput.value.trim(),
+          priority,
+          tag,
+          estimatedPomos: pomos,
+          completedPomos: 0,
+          completed: false,
+          notes,
+          subtasks: currentModalSubtasks
+        };
+        appTasks.unshift(newTask);
+      }
+
+      saveTasks();
+      closeTaskModal();
+    }
+
+    function deleteCurrentModalTask() {
+      const editingId = document.getElementById('modalEditingTaskId').value;
+      if (editingId && confirm('Supprimer définitivement cette tâche ?')) {
+        appTasks = appTasks.filter(t => t.id !== editingId);
+        saveTasks();
+        closeTaskModal();
+      }
+    }
+
+    function startFocusOnModalTask() {
+      const editingId = document.getElementById('modalEditingTaskId').value;
+      if (editingId) {
+        startFocusOnTask(editingId);
+        closeTaskModal();
+      }
+    }
+
+    // --- Interactive Streak Dots ---
     function toggleDot(item) {
       const dot = item.querySelector('.streak-dot-circle');
       dot.classList.toggle('active');
       dot.classList.toggle('glowing');
     }
 
-    // Interactive Sliders
-    function moveThumb(track, event) {
+    // --- Interactive Sliders with Procedural Web Audio ---
+    let cafeVolume = 0.65;
+    let rainVolume = 0.40;
+
+    function moveThumb(track, event, channel) {
       const rect = track.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const pct = Math.min(100, Math.max(0, Math.round((clickX / rect.width) * 100)));
       track.querySelector('.radio-groove-fill').style.width = pct + '%';
       track.querySelector('.radio-groove-thumb').style.left = pct + '%';
+
+      if (channel === 'cafe') {
+        cafeVolume = pct / 100;
+        if (isPlayingAudio && window.audioEngine) {
+          window.audioEngine.setChannelVolume('drone', cafeVolume * 0.7);
+        }
+      } else if (channel === 'rain') {
+        rainVolume = pct / 100;
+        if (isPlayingAudio && window.audioEngine) {
+          window.audioEngine.setChannelVolume('rain', rainVolume * 0.7);
+        }
+      }
     }
 
-    // Mini radio play toggle
+    // --- Mini Radio Toggle & Procedural Sound ---
     const btnRadio = document.getElementById('btnRadioPlay');
     let isPlayingAudio = false;
-    btnRadio.addEventListener('click', () => {
-      isPlayingAudio = !isPlayingAudio;
-      btnRadio.textContent = isPlayingAudio ? '❚❚' : '▶';
-    });
+    const radioTracksList = ['Chillhop Lofi Beats', 'Coffee Shop Ambient', 'Midnight Rain Study', 'Binaural Alpha Waves'];
+    let currentRadioTrackIdx = 0;
 
-    // Initial render
+    function toggleAudioRadio() {
+      if (!window.audioEngine) return;
+      window.audioEngine.ensureContext();
+      isPlayingAudio = !isPlayingAudio;
+      if (btnRadio) btnRadio.textContent = isPlayingAudio ? '❚❚' : '▶';
+
+      if (isPlayingAudio) {
+        window.audioEngine.setChannelVolume('drone', cafeVolume * 0.7);
+        window.audioEngine.setChannelVolume('rain', rainVolume * 0.7);
+      } else {
+        window.audioEngine.setChannelVolume('drone', 0);
+        window.audioEngine.setChannelVolume('rain', 0);
+      }
+    }
+
+    function prevAudioTrack() {
+      currentRadioTrackIdx = (currentRadioTrackIdx - 1 + radioTracksList.length) % radioTracksList.length;
+      document.getElementById('radioTrackTitle').textContent = radioTracksList[currentRadioTrackIdx];
+    }
+    function nextAudioTrack() {
+      currentRadioTrackIdx = (currentRadioTrackIdx + 1) % radioTracksList.length;
+      document.getElementById('radioTrackTitle').textContent = radioTracksList[currentRadioTrackIdx];
+    }
+
+    // --- Calendar Nav ---
+    let weekOffset = 0;
+    function updateCalendarRangeText(str) {
+      const el1 = document.getElementById('calendarDateRange');
+      if (el1) el1.textContent = str;
+      const el2 = document.getElementById('calendarDateRangeExtended');
+      if (el2) el2.textContent = `${str} • SEMAINE ACTIVE`;
+    }
+
+    function prevWeek() {
+      weekOffset--;
+      updateCalendarRangeText('OCT 07 - 13');
+    }
+    function nextWeek() {
+      weekOffset++;
+      updateCalendarRangeText('OCT 21 - 27');
+    }
+    function resetWeek() {
+      weekOffset = 0;
+      updateCalendarRangeText('OCT 14 - 20');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initial Launch
     renderTimer();
+    renderDashboardTasks();
+    renderFullTasksList();
   </script>
 </body>
 </html>

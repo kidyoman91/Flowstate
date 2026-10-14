@@ -6,13 +6,18 @@
     if (sessionStorage.getItem('flowstate_auth') !== 'valid' && localStorage.getItem('flowstate_auth') !== 'valid') {
       window.location.replace('index.html');
     }
+    // Theme Initializer
+    (function() {
+      const t = localStorage.getItem('flowstate_theme') || 'orange';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FLOWSTATE — Productivité, Deep Work & Planning Cozy</title>
   <meta name="description" content="Plateforme de productivité personnelle alliant Deep Work, Time-blocking, To-Do list et ambiance sonore lo-fi.">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0c0e17">
+  <meta name="theme-color" content="#f6f5f0">
   <!-- iOS Safari PWA support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -81,6 +86,12 @@
 
       <!-- Right Header Actions -->
       <div class="header-actions">
+        <!-- Live Color Palette Toggle (Orange vs Blue) -->
+        <div class="theme-toggle-pill" title="Changer l'accent de couleur en direct">
+          <button class="theme-toggle-btn active" id="btnThemeOrange">⚡ Orange</button>
+          <button class="theme-toggle-btn" id="btnThemeBlue">🔷 Bleu</button>
+        </div>
+
         <!-- Live Clock & Date -->
         <div style="text-align: right; margin-right: 0.25rem;">
           <div id="liveClockTime" style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: var(--text-main);">--:--</div>
@@ -877,6 +888,33 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
         window.location.replace('index.html');
       }
     }
+
+    // Live Theme Switcher Handler
+    (function() {
+      const currentTheme = localStorage.getItem('flowstate_theme') || 'orange';
+      const btnOrange = document.getElementById('btnThemeOrange');
+      const btnBlue = document.getElementById('btnThemeBlue');
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('flowstate_theme', theme);
+        if (btnOrange && btnBlue) {
+          if (theme === 'blue') {
+            btnBlue.classList.add('active');
+            btnOrange.classList.remove('active');
+          } else {
+            btnOrange.classList.add('active');
+            btnBlue.classList.remove('active');
+          }
+        }
+      }
+
+      if (btnOrange && btnBlue) {
+        applyTheme(currentTheme);
+        btnOrange.addEventListener('click', () => applyTheme('orange'));
+        btnBlue.addEventListener('click', () => applyTheme('blue'));
+      }
+    })();
   </script>
   <script>
     if ('serviceWorker' in navigator) {

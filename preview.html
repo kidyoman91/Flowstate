@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLOWSTATE — Tactile Studio Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Fond Papier Carnet à Points (Dot-Grid Notebook Paper) */
+      --bg-canvas: #f6f5f0;
+      --dot-grid-color: rgba(45, 50, 62, 0.22);
+
+      /* Châssis & composants : Blanc craie / Porcelaine mat Braun (très lumineux & épuré) */
+      --card-bg: #eceeed;
+      --card-inner: #dcdedd;
+      --card-sunken: #cbcecd;
+      --text-title: #111316;
+      --text-body: #383c44;
+      --text-muted: #6b707c;
+      --border-subtle: rgba(255, 255, 255, 0.85);
+
+      /* Ombres neumorphiques aériennes et physiques posées sur le papier */
+      --shadow-outer: 10px 14px 28px rgba(30, 35, 45, 0.08), -6px -6px 14px rgba(255, 255, 255, 0.95);
+      --shadow-pill: 4px 6px 12px rgba(30, 35, 45, 0.08), -3px -3px 8px rgba(255, 255, 255, 0.95);
+      --shadow-inset: inset 3px 3px 6px rgba(30, 35, 45, 0.10), inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+      --shadow-inset-deep: inset 5px 6px 12px rgba(30, 35, 45, 0.14), inset -4px -4px 10px rgba(255, 255, 255, 0.85);
+
+      /* Theme accent: Electric Orange by default */
+      --accent: #ff5500;
+      --accent-glow: rgba(255, 85, 0, 0.38);
+      --accent-soft: rgba(255, 85, 0, 0.16);
+    }
+
+    [data-theme="blue"] {
+      --accent: #0055ff;
+      --accent-glow: rgba(0, 85, 255, 0.38);
+      --accent-soft: rgba(0, 85, 255, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      background-image: 
+        /* 1. Grille de points géométrique (Dot grid notebook) */
+        radial-gradient(circle, var(--dot-grid-color) 1.25px, transparent 1.25px),
+        /* 2. Éclairage diffus studio sur la feuille */
+        radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.5) 0%, rgba(30, 35, 45, 0.04) 100%),
+        /* 3. Micro-grain organique de fibre de papier */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paperGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperGrain)' opacity='0.035'/%3E%3C/svg%3E");
+      background-size: 24px 24px, 100% 100%, 180px 180px;
+      background-position: 0 0, center center, 0 0;
+      color: var(--text-title);
+      min-height: 100vh;
+      padding: 1.5rem 2.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-viewport {
+      width: 100%;
+      max-width: 1280px;
+    }
+
+    /* ========================================================
+       Top Navigation Bar (Identical to mockup)
+       ======================================================== */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding: 0.25rem 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    /* Stepped geometric logo from the mockup */
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .brand-icon-bar {
+      height: 5px;
+      background: var(--text-title);
+      border-radius: 2px;
+    }
+    .brand-icon-bar:nth-child(1) { width: 18px; }
+    .brand-icon-bar:nth-child(2) { width: 26px; }
+    .brand-icon-bar:nth-child(3) { width: 14px; margin-left: 8px; }
+    .brand-icon-bar:nth-child(4) { width: 22px; }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--text-title);
+    }
+
+    .nav-tabs-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      padding: 0.35rem 0.6rem;
+      border-radius: 9999px;
+    }
+
+    .nav-tab-item {
+      padding: 0.5rem 1.15rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-radius: 9999px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .nav-tab-item:hover {
+      color: var(--text-title);
+    }
+
+    .nav-tab-item.active {
+      color: var(--text-title);
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Color switch toggle */
+    .theme-toggle-pill {
+      display: flex;
+      align-items: center;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      padding: 0.25rem;
+      border-radius: 9999px;
+      gap: 0.25rem;
+    }
+
+    .theme-toggle-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .theme-toggle-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--accent-glow);
+    }
+
+    .user-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.4rem 0.95rem 0.4rem 0.45rem;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+
+    .user-avatar-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #232730;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    /* ========================================================
+       Dashboard 2-Column Grid (Matches Mockup)
+       ======================================================== */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 1.75rem;
+    }
+
+    /* Sculpted Neumorphic Card Base */
+    .tactile-card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      border-radius: 28px;
+      padding: 1.75rem 2rem;
+      position: relative;
+    }
+
+    /* ========================================================
+       LEFT COLUMN: Deep Work Timer & Today's Focus Tasks
+       ======================================================== */
+    .card-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-title);
+      margin-bottom: 1.5rem;
+    }
+
+    .timer-hero-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    /* The Horseshoe Sculpted Timer Dish */
+    .horseshoe-timer-stage {
+      position: relative;
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-outer);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .horseshoe-inner-dish {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset-deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .horseshoe-svg {
+      position: absolute;
+      inset: 0;
+      width: 270px;
+      height: 270px;
+      transform: rotate(135deg); /* Open horseshoe at bottom */
+      pointer-events: none;
+    }
+
+    .horseshoe-svg circle {
+      fill: none;
+      stroke-width: 14;
+      stroke-linecap: round;
+    }
+
+    .horseshoe-svg-track {
+      stroke: rgba(0, 0, 0, 0.08);
+      stroke-dasharray: 590; /* 3/4 circumference */
+      stroke-dashoffset: 0;
+    }
+
+    .horseshoe-svg-fill {
+      stroke: var(--accent);
+      stroke-dasharray: 590;
+      stroke-dashoffset: 80;
+      transition: stroke 0.3s, stroke-dashoffset 0.5s ease;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+    }
+
+    .time-label-small {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .time-display-huge {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-title);
+      line-height: 1;
+    }
+
+    .timer-control-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .btn-pill {
+      border: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      padding: 0.65rem 1.4rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-title);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-pill:active {
+      box-shadow: var(--shadow-inset);
+      transform: translateY(1px);
+    }
+
+    .btn-pill-accent {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 6px 18px var(--accent-glow);
+    }
+
+    .btn-pill-accent:active {
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    /* Tasks Section below Timer */
+    .tasks-section-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-title);
+      margin-bottom: 1rem;
+    }
+
+    .tasks-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      cursor: pointer;
+      user-select: none;
+      padding: 0.35rem 0;
+    }
+
+    .task-check-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: var(--card-sunken);
+      box-shadow: var(--shadow-inset);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .task-check-box.checked {
+      background: var(--accent);
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    .task-check-box.checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .task-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-body);
+      transition: all 0.2s;
+    }
+
+    .task-row.checked .task-text {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    /* ========================================================
+       RIGHT COLUMN: Weekly Calendar Overview
+       ======================================================== */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .calendar-card {
+      flex: 1;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .calendar-title-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .calendar-week-range {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-title);
+    }
+
+    .calendar-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .cal-nav-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-body);
+      cursor: pointer;
+    }
+
+    .cal-nav-btn:active {
+      box-shadow: var(--shadow-inset);
+    }
+
+    /* Timetable Grid */
+    .timetable-grid {
+      display: grid;
+      grid-template-columns: 50px repeat(7, 1fr);
+      gap: 6px;
+      font-size: 0.75rem;
+    }
+
+    .timetable-header-cell {
+      text-align: center;
+      font-weight: 700;
+      color: var(--text-body);
+      padding-bottom: 0.5rem;
+    }
+
+    .timetable-time-label {
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      height: 38px;
+      font-size: 0.72rem;
+    }
+
+    .timetable-cell {
+      height: 38px;
+      background: rgba(0, 0, 0, 0.025);
+      border-radius: 6px;
+      border: 1px dashed rgba(0, 0, 0, 0.09);
+      position: relative;
+    }
+
+    /* Schedule Time-Blocks */
+    .schedule-block {
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .schedule-block:hover {
+      transform: translateY(-1px);
+    }
+
+    .block-deep-orange {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .block-deep-light {
+      background: var(--card-inner);
+      box-shadow: var(--shadow-pill);
+      color: var(--text-title);
+    }
+
+    .block-meeting {
+      background: #848a97;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(30, 35, 45, 0.12);
+    }
+
+    /* ========================================================
+       BOTTOM ROW: Streak Tracker & Lo-Fi Radio
+       ======================================================== */
+    .bottom-cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Weekly Focus Streak Card */
+    .streak-dots-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.15rem;
+      padding: 0 0.5rem;
+    }
+
+    .streak-day-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+    }
+
+    .streak-dot-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--card-inner);
+      box-shadow: var(--shadow-inset);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .streak-dot-circle.active {
+      background: var(--accent);
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .streak-dot-circle.glowing {
+      background: var(--accent);
+      box-shadow: 0 0 0 5px var(--accent-soft), 0 4px 14px var(--accent-glow);
+    }
+
+    .streak-day-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-body);
+    }
+
+    /* Lo-Fi Radio Card */
+    .radio-slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .radio-slider-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      width: 55px;
+    }
+
+    .radio-groove-track {
+      flex: 1;
+      height: 10px;
+      background: var(--card-sunken);
+      box-shadow: var(--shadow-inset);
+      border-radius: 9999px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .radio-groove-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      transition: background 0.3s;
+    }
+
+    .radio-groove-thumb {
+      position: absolute;
+      top: -4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-pill);
+      transform: translateX(-50%);
+    }
+
+    .radio-footer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.15rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .radio-track-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-title);
+    }
+
+    .radio-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-radio-mini {
+      border: none;
+      background: transparent;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text-title);
+      padding: 0.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand-group">
+        <div class="brand-icon">
+          <div class="brand-icon-bar"></div>
+          <div class="brand-icon-bar"></div>
+          <div class="brand-icon-bar"></div>
+          <div class="brand-icon-bar"></div>
+        </div>
+        <div class="brand-name">FLOWSTATE</div>
+      </div>
+
+      <!-- Center Pill Navigation -->
+      <nav class="nav-tabs-pill">
+        <button class="nav-tab-item active">DASHBOARD</button>
+        <button class="nav-tab-item">FOCUS</button>
+        <button class="nav-tab-item">TASKS</button>
+        <button class="nav-tab-item">CALENDAR</button>
+        <button class="nav-tab-item">ANALYTICS</button>
+        <button class="nav-tab-item">SETTINGS</button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-right">
+        <!-- Live Color Palette Toggle -->
+        <div class="theme-toggle-pill" title="Changer l'accent de couleur en direct">
+          <button class="theme-toggle-btn active" id="btnThemeOrange">⚡ Orange</button>
+          <button class="theme-toggle-btn" id="btnThemeBlue">🔷 Bleu</button>
+        </div>
+
+        <div class="user-profile-pill">
+          <div class="user-avatar-circle">A</div>
+          <span>ADAM ⌵</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main 2-Column Dashboard Grid -->
+    <main class="dashboard-layout">
+      <!-- ============================================== -->
+      <!-- LEFT COLUMN: Deep Work Card + Focus Tasks      -->
+      <!-- ============================================== -->
+      <section class="tactile-card">
+        <h2 class="card-heading">Deep Work</h2>
+
+        <!-- Horseshoe Sculptural Timer -->
+        <div class="timer-hero-wrapper">
+          <div class="horseshoe-timer-stage">
+            <svg class="horseshoe-svg" viewBox="0 0 270 270">
+              <circle class="horseshoe-svg-track" cx="135" cy="135" r="115"></circle>
+              <circle class="horseshoe-svg-fill" id="timerArcFill" cx="135" cy="135" r="115"></circle>
+            </svg>
+            <div class="horseshoe-inner-dish">
+              <span class="time-label-small">Time remaining</span>
+              <span class="time-display-huge" id="timerCountdownText">50:00</span>
+            </div>
+          </div>
+
+          <div class="timer-control-buttons">
+            <button class="btn-pill btn-pill-accent" id="btnPlayPause">
+              <span id="playIcon">▶</span> <span id="playText">PLAY/PAUSE</span>
+            </button>
+            <button class="btn-pill" id="btnResetTimer">
+              ↺ RESET
+            </button>
+          </div>
+        </div>
+
+        <!-- Today's Focus Tasks -->
+        <div>
+          <h3 class="tasks-section-title">Today's Focus Tasks</h3>
+          <div class="tasks-container">
+            <div class="task-row checked" onclick="toggleTaskRow(this)">
+              <div class="task-check-box checked"></div>
+              <span class="task-text">Finalize UX Mockups (4h)</span>
+            </div>
+            <div class="task-row checked" onclick="toggleTaskRow(this)">
+              <div class="task-check-box checked"></div>
+              <span class="task-text">Client Presentation Deck (2h)</span>
+            </div>
+            <div class="task-row" onclick="toggleTaskRow(this)">
+              <div class="task-check-box"></div>
+              <span class="task-text">Code Review</span>
+            </div>
+            <div class="task-row" onclick="toggleTaskRow(this)">
+              <div class="task-check-box"></div>
+              <span class="task-text">Team Sync</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- RIGHT COLUMN: Calendar Grid + Streak & Radio   -->
+      <!-- ============================================== -->
+      <div class="right-column">
+        <!-- Top: Weekly Overview Time-Blocking Grid -->
+        <section class="tactile-card calendar-card">
+          <div class="calendar-header">
+            <div>
+              <div class="calendar-title-label">Weekly Overview</div>
+              <div class="calendar-week-range">OCT 21 - 27</div>
+            </div>
+            <div class="calendar-nav-controls">
+              <button class="cal-nav-btn">‹</button>
+              <button class="cal-nav-btn">:</button>
+              <button class="cal-nav-btn">›</button>
+            </div>
+          </div>
+
+          <div class="timetable-grid">
+            <!-- Day Headers -->
+            <div></div>
+            <div class="timetable-header-cell">Mon</div>
+            <div class="timetable-header-cell">Tue</div>
+            <div class="timetable-header-cell">Wed</div>
+            <div class="timetable-header-cell">Thu</div>
+            <div class="timetable-header-cell">Fri</div>
+            <div class="timetable-header-cell">Sat</div>
+            <div class="timetable-header-cell">Sun</div>
+
+            <!-- Row 08:00 -->
+            <div class="timetable-time-label">08:00</div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+
+            <!-- Row 09:00 - 11:00 with Deep Work blocks -->
+            <div class="timetable-time-label">09:00</div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-deep-orange" style="height: 100%;">
+                DEEP WORK<br>09:00-13:00
+              </div>
+            </div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-deep-light" style="height: 100%;">
+                DEEP WORK<br>09:00-13:00
+              </div>
+            </div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-deep-light" style="height: 100%;">
+                DEEP WORK<br>09:00-13:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-deep-orange" style="height: 100%;">
+                DEEP WORK<br>09:00-13:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+
+            <!-- Row 11:00 -->
+            <div class="timetable-time-label">11:00</div>
+            <!-- cells spanned from row above -->
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+
+            <!-- Row 14:00 with Meetings -->
+            <div class="timetable-time-label">14:00</div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-meeting" style="height: 100%;">
+                MEETINGS<br>14:00-16:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-meeting" style="height: 100%;">
+                MEETINGS<br>14:00-16:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-meeting" style="height: 100%;">
+                MEETINGS<br>14:00-16:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+
+            <!-- Row 16:00 -->
+            <div class="timetable-time-label">16:00</div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-meeting" style="height: 100%;">
+                MEETINGS<br>14:00-16:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell" style="grid-row: span 2;">
+              <div class="schedule-block block-meeting" style="height: 100%;">
+                MEETINGS<br>14:00-16:00
+              </div>
+            </div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+            <div class="timetable-cell"></div>
+          </div>
+        </section>
+
+        <!-- Bottom Row: Weekly Streak + Lo-Fi Radio -->
+        <div class="bottom-cards-row">
+          <!-- Weekly Focus Streak -->
+          <section class="tactile-card">
+            <h3 class="calendar-title-label">Weekly Focus Streak</h3>
+            <div class="streak-dots-row">
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle active"></div>
+                <span class="streak-day-name">Mon</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle active"></div>
+                <span class="streak-day-name">Tue</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle active"></div>
+                <span class="streak-day-name">Wed</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle active"></div>
+                <span class="streak-day-name">Thu</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle glowing active"></div>
+                <span class="streak-day-name">Fri</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle"></div>
+                <span class="streak-day-name">Sat</span>
+              </div>
+              <div class="streak-day-item" onclick="toggleDot(this)">
+                <div class="streak-dot-circle"></div>
+                <span class="streak-day-name">Sun</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Lo-Fi Radio -->
+          <section class="tactile-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 class="calendar-title-label">Lo-Fi Radio</h3>
+              <span style="font-size: 0.9rem; color: var(--text-muted); cursor: pointer;">•••</span>
+            </div>
+
+            <div class="radio-slider-row">
+              <span class="radio-slider-name">Volume</span>
+              <div class="radio-groove-track" onclick="moveThumb(this, event)">
+                <div class="radio-groove-fill" style="width: 65%;"></div>
+                <div class="radio-groove-thumb" style="left: 65%;"></div>
+              </div>
+            </div>
+
+            <div class="radio-slider-row">
+              <span class="radio-slider-name">Seek</span>
+              <div class="radio-groove-track" onclick="moveThumb(this, event)">
+                <div class="radio-groove-fill" style="width: 40%;"></div>
+                <div class="radio-groove-thumb" style="left: 40%;"></div>
+              </div>
+            </div>
+
+            <div class="radio-footer-controls">
+              <div class="radio-buttons">
+                <button class="btn-radio-mini" title="Précédent">|◀</button>
+                <button class="btn-radio-mini" id="btnRadioPlay" style="font-weight: 800;">▶</button>
+                <button class="btn-radio-mini" title="Suivant">▶|</button>
+              </div>
+              <span class="radio-track-title">Chillhop Lofi Beats</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Theme Switcher (Orange vs Blue)
+    const btnOrange = document.getElementById('btnThemeOrange');
+    const btnBlue = document.getElementById('btnThemeBlue');
+
+    btnOrange.addEventListener('click', () => {
+      document.documentElement.setAttribute('data-theme', 'orange');
+      btnOrange.classList.add('active');
+      btnBlue.classList.remove('active');
+    });
+
+    btnBlue.addEventListener('click', () => {
+      document.documentElement.setAttribute('data-theme', 'blue');
+      btnBlue.classList.add('active');
+      btnOrange.classList.remove('active');
+    });
+
+    // Interactive Horseshoe Timer
+    let totalSec = 50 * 60;
+    let remainingSec = totalSec;
+    let isRunning = false;
+    let timerInterval = null;
+
+    const timerText = document.getElementById('timerCountdownText');
+    const timerArc = document.getElementById('timerArcFill');
+    const btnPlay = document.getElementById('btnPlayPause');
+    const btnReset = document.getElementById('btnResetTimer');
+    const playIcon = document.getElementById('playIcon');
+    const playText = document.getElementById('playText');
+
+    // Arc dasharray length: 590
+    const maxDash = 590;
+
+    function renderTimer() {
+      const mins = Math.floor(remainingSec / 60);
+      const secs = remainingSec % 60;
+      timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      // Progress offset
+      const progress = (totalSec - remainingSec) / totalSec;
+      timerArc.style.strokeDashoffset = maxDash * (1 - progress);
+    }
+
+    btnPlay.addEventListener('click', () => {
+      isRunning = !isRunning;
+      if (isRunning) {
+        playIcon.textContent = '❚❚';
+        playText.textContent = 'PAUSE';
+        timerInterval = setInterval(() => {
+          if (remainingSec > 0) {
+            remainingSec--;
+            renderTimer();
+          } else {
+            clearInterval(timerInterval);
+            isRunning = false;
+            playIcon.textContent = '▶';
+            playText.textContent = 'PLAY/PAUSE';
+          }
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        playIcon.textContent = '▶';
+        playText.textContent = 'PLAY/PAUSE';
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      isRunning = false;
+      remainingSec = totalSec;
+      playIcon.textContent = '▶';
+      playText.textContent = 'PLAY/PAUSE';
+      renderTimer();
+    });
+
+    // Interactive Checkboxes
+    function toggleTaskRow(row) {
+      const isChecked = row.classList.toggle('checked');
+      const box = row.querySelector('.task-check-box');
+      box.classList.toggle('checked', isChecked);
+    }
+
+    // Interactive Streak Dots
+    function toggleDot(item) {
+      const dot = item.querySelector('.streak-dot-circle');
+      dot.classList.toggle('active');
+      dot.classList.toggle('glowing');
+    }
+
+    // Interactive Sliders
+    function moveThumb(track, event) {
+      const rect = track.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const pct = Math.min(100, Math.max(0, Math.round((clickX / rect.width) * 100)));
+      track.querySelector('.radio-groove-fill').style.width = pct + '%';
+      track.querySelector('.radio-groove-thumb').style.left = pct + '%';
+    }
+
+    // Mini radio play toggle
+    const btnRadio = document.getElementById('btnRadioPlay');
+    let isPlayingAudio = false;
+    btnRadio.addEventListener('click', () => {
+      isPlayingAudio = !isPlayingAudio;
+      btnRadio.textContent = isPlayingAudio ? '❚❚' : '▶';
+    });
+
+    // Initial render
+    renderTimer();
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@
   <title>FLOWSTATE — Connexion</title>
   <meta name="description" content="Accès sécurisé à votre espace personnel FLOWSTATE">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0c0e17">
+  <meta name="theme-color" content="#f6f5f0">
   <!-- iOS Safari PWA support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
   <script>
+    (function() {
+      const t = localStorage.getItem('flowstate_theme') || 'orange';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
     // If already authenticated and "remember me" was checked, redirect directly to app.html
     if (localStorage.getItem('flowstate_auth') === 'valid' || sessionStorage.getItem('flowstate_auth') === 'valid') {
       window.location.replace('app.html');

@@ -906,12 +906,61 @@ body {
   gap: 1.5rem;
 }
 
+/* Tasks Metrics Ribbon */
+.tasks-metrics-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.task-metric-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.95rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.task-metric-chip .chip-label {
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.task-metric-chip .chip-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-main);
+  background: var(--card-inner);
+  box-shadow: var(--shadow-inset);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.task-metric-chip .chip-val.active-val {
+  color: var(--accent);
+}
+
+.task-metric-chip .chip-val.done-val {
+  color: var(--accent-emerald);
+}
+
 /* Task creation bar */
 .task-creator-card {
   padding: 1.25rem;
-  background: var(--bg-surface-elevated);
+  background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-outer);
 }
 
 .task-input-row {
@@ -922,20 +971,21 @@ body {
 
 .task-main-input {
   flex: 1;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
   border-radius: var(--radius-md);
   padding: 0.85rem 1.15rem;
   color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .task-main-input:focus {
-  border-color: var(--accent-amber);
-  box-shadow: 0 0 0 2px var(--accent-amber-glow);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-inset), 0 0 0 2px var(--border-glow);
 }
 
 .task-options-row {
@@ -944,7 +994,7 @@ body {
   justify-content: space-between;
   margin-top: 1rem;
   padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(30, 35, 45, 0.08);
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -953,21 +1003,25 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .select-custom {
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
+  color: var(--text-main);
   border-radius: var(--radius-sm);
   padding: 0.45rem 0.85rem;
   font-size: 0.82rem;
+  font-weight: 500;
   outline: none;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .select-custom:focus {
-  border-color: var(--accent-amber);
+  border-color: var(--accent);
 }
 
 /* Task Filters & Search Tabs */
@@ -983,41 +1037,45 @@ body {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .filter-pill-btn {
   padding: 0.45rem 0.95rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card-bg);
   border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
   color: var(--text-muted);
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .filter-pill-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--card-inner);
   color: var(--text-main);
 }
 
 .filter-pill-btn.active {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.35);
-  color: var(--accent-amber-light);
-  font-weight: 600;
+  background: var(--card-inner);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: var(--shadow-inset);
+  font-weight: 700;
 }
 
 .search-box {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.9rem;
-  width: 240px;
+  width: 250px;
 }
 
 .search-box svg {
@@ -1041,39 +1099,44 @@ body {
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .task-item {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1.1rem 1.25rem;
-  background: var(--bg-surface);
+  padding: 1.15rem 1.35rem;
+  background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
   position: relative;
+  cursor: pointer;
 }
 
 .task-item:hover {
-  background: var(--bg-surface-hover);
-  border-color: rgba(255, 255, 255, 0.14);
-  transform: translateY(-1px);
+  background: #f0f2f1;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1.5px);
+  border-color: rgba(255, 255, 255, 0.95);
 }
 
 .task-checkbox-wrap {
-  margin-top: 2px;
+  margin-top: 3px;
+  flex-shrink: 0;
 }
 
 .task-checkbox {
   appearance: none;
   -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
-  border: 2px solid var(--border-medium);
-  background: transparent;
+  border: 1.5px solid rgba(30, 35, 45, 0.16);
+  background: var(--card-inner);
+  box-shadow: var(--shadow-inset);
   cursor: pointer;
   display: grid;
   place-content: center;
@@ -1081,12 +1144,13 @@ body {
 }
 
 .task-checkbox:hover {
-  border-color: var(--accent-amber);
+  border-color: var(--accent);
 }
 
 .task-checkbox:checked {
-  background: linear-gradient(135deg, var(--accent-amber), #ea580c);
-  border-color: var(--accent-amber);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--border-glow);
 }
 
 .task-checkbox:checked::before {
@@ -1102,12 +1166,23 @@ body {
   min-width: 0;
 }
 
+.task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .task-title {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: var(--text-main);
   word-break: break-word;
   transition: color var(--transition-fast);
+}
+
+.task-notes-indicator {
+  font-size: 0.85rem;
+  opacity: 0.75;
 }
 
 .task-item.completed .task-title {
@@ -1115,11 +1190,41 @@ body {
   color: var(--text-dim);
 }
 
+/* Notes Preview Snippet on Card */
+.task-notes-snippet {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: var(--card-inner);
+  border: 1px solid rgba(30, 35, 45, 0.06);
+  box-shadow: var(--shadow-inset);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-notes-snippet .snippet-icon {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.task-notes-snippet .snippet-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .task-meta {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  margin-top: 0.45rem;
+  margin-top: 0.55rem;
   flex-wrap: wrap;
 }
 
@@ -1129,12 +1234,15 @@ body {
   border-radius: var(--radius-full);
   font-weight: 600;
   letter-spacing: 0.02em;
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  color: var(--text-muted);
 }
 
-.tag-badge.deepwork { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber-light); border: 1px solid rgba(245, 158, 11, 0.25); }
-.tag-badge.projet { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.25); }
-.tag-badge.admin { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.25); }
-.tag-badge.perso { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
+.tag-badge.deepwork { background: rgba(255, 85, 0, 0.12); color: var(--accent); border-color: rgba(255, 85, 0, 0.25); }
+.tag-badge.projet { background: rgba(79, 70, 229, 0.12); color: var(--accent-indigo); border-color: rgba(79, 70, 229, 0.25); }
+.tag-badge.admin { background: rgba(82, 87, 99, 0.12); color: var(--text-muted); border-color: rgba(82, 87, 99, 0.25); }
+.tag-badge.perso { background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); border-color: rgba(5, 150, 105, 0.25); }
 
 .priority-indicator {
   font-size: 0.72rem;
@@ -1153,8 +1261,8 @@ body {
 .p-high { color: var(--accent-rose); }
 .p-high .priority-dot { background: var(--accent-rose); box-shadow: 0 0 6px var(--accent-rose); }
 
-.p-medium { color: var(--accent-amber); }
-.p-medium .priority-dot { background: var(--accent-amber); }
+.p-medium { color: var(--accent); }
+.p-medium .priority-dot { background: var(--accent); }
 
 .p-low { color: var(--text-dim); }
 .p-low .priority-dot { background: var(--text-dim); }
@@ -1168,16 +1276,132 @@ body {
   gap: 0.3rem;
 }
 
+.btn-inline-subtask {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.55rem;
+  color: var(--text-dim);
+  border-radius: var(--radius-full);
+}
+.btn-inline-subtask:hover {
+  color: var(--accent);
+  background: var(--card-inner);
+}
+
+/* Subtasks inside task card */
+.task-card-subtasks-wrap {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.subtasks-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.subtasks-progress-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.subtasks-mini-bar {
+  flex: 1;
+  max-width: 140px;
+  height: 5px;
+  background: var(--card-sunken);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.subtasks-mini-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  transition: width 0.3s;
+}
+
+.subtasks-inline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.subtask-inline-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: color var(--transition-fast);
+}
+
+.subtask-inline-item.completed {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.subtask-inline-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(30, 35, 45, 0.2);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-inset);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.subtask-inline-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.subtask-inline-checkbox:checked::before {
+  content: "✓";
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .task-actions {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  opacity: 0.65;
+  gap: 0.45rem;
+  opacity: 0.75;
   transition: opacity var(--transition-fast);
 }
 
 .task-item:hover .task-actions {
   opacity: 1;
+}
+
+.btn-open-notes {
+  font-size: 0.95rem;
+}
+
+.empty-state-card {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: var(--card-bg);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
 }
 
 /* ==========================================================================
@@ -1678,6 +1902,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
   max-width: 620px;
 }
 
+.modal-dialog.modal-task-detail {
+  max-width: 680px;
+}
+
+.modal-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
 .modal-backdrop.open .modal-dialog {
   transform: scale(1);
 }
@@ -1713,9 +1955,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transition: all var(--transition-fast);
 }
 
+.form-input-lg {
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.85rem 1.15rem;
+}
+
 .form-input:focus {
   border-color: var(--accent);
-  box-shadow: var(--shadow-inset), 0 0 0 2px var(--accent-amber-glow);
+  box-shadow: var(--shadow-inset), 0 0 0 2px var(--border-glow);
 }
 
 .form-row {
@@ -1726,19 +1974,129 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 /* Modal Inner Section Card */
 .modal-section-card {
-  background: rgba(14, 18, 30, 0.65);
+  background: var(--card-bg);
   border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-md);
-  padding: 1rem 1.15rem;
-  margin-bottom: 1.1rem;
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 1.15rem;
   text-align: left;
+}
+
+/* Dedicated Task Notes Space */
+.task-notes-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.notes-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  padding: 0.2rem 0.55rem;
+  background: var(--card-inner);
+  box-shadow: var(--shadow-inset);
+  border-radius: var(--radius-sm);
+}
+
+.notes-status-badge .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+}
+
+.notes-status-badge.saving .status-dot {
+  background: var(--accent);
+  animation: pulseFire 1s infinite alternate;
+}
+
+.notes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.note-tool-btn {
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.note-tool-btn:hover {
+  background: #fff;
+  color: var(--text-main);
+  border-color: rgba(30, 35, 45, 0.2);
+}
+
+.note-tool-btn:active {
+  box-shadow: var(--shadow-inset);
+  transform: translateY(1px);
+}
+
+.note-tool-clear:hover {
+  color: var(--accent-rose);
+  border-color: rgba(225, 29, 72, 0.3);
+}
+
+.task-notes-textarea {
+  width: 100%;
+  min-height: 150px;
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.15rem;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  outline: none;
+  resize: vertical;
+  transition: all var(--transition-fast);
+}
+
+.task-notes-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-inset), 0 0 0 2px var(--border-glow);
+}
+
+/* Subtasks Progress Bar in Modal */
+.subtask-progress-track {
+  width: 100%;
+  height: 7px;
+  background: var(--card-sunken);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-inset);
+  overflow: hidden;
+}
+
+.subtask-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--border-glow);
+  border-radius: var(--radius-full);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-subtask-list {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  max-height: 180px;
+  gap: 0.5rem;
+  max-height: 220px;
   overflow-y: auto;
   padding-right: 0.25rem;
 }
@@ -1748,9 +2106,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
   align-items: center;
   justify-content: space-between;
   gap: 0.65rem;
-  padding: 0.5rem 0.85rem;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.55rem 0.85rem;
+  background: var(--card-inner);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-inset);
   border-radius: var(--radius-sm);
   font-size: 0.86rem;
   color: var(--text-main);
@@ -1758,11 +2117,43 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .modal-subtask-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(30, 35, 45, 0.25);
 }
 
-.modal-subtask-item span {
+.modal-subtask-item.completed {
+  opacity: 0.65;
+}
+
+.modal-subtask-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(30, 35, 45, 0.22);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-inset);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.modal-subtask-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.modal-subtask-checkbox:checked::before {
+  content: "✓";
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.modal-subtask-title {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;

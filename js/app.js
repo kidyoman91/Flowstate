@@ -14,6 +14,7 @@ const DEFAULT_INITIAL_STATE = {
       completedPomos: 1,
       completed: false,
       createdAt: new Date().toISOString(),
+      notes: "• Définir l'architecture modulaire & les composants clés\n• Vérifier la synchronisation temps réel Supabase et PWA offline\n• Référence DA : Braun & Dieter Rams (porcelaine matte & grille points)",
       subtasks: [
         { id: 'sub_1', title: 'Définir les specs clés', completed: true },
         { id: 'sub_2', title: 'Schématiser le flux utilisateur', completed: false },
@@ -30,6 +31,7 @@ const DEFAULT_INITIAL_STATE = {
       completed: true,
       createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
       completedAt: new Date().toISOString(),
+      notes: "Rapport validé et envoyé à l'équipe. Points d'action notés pour la semaine prochaine.",
       subtasks: []
     },
     {
@@ -41,6 +43,7 @@ const DEFAULT_INITIAL_STATE = {
       completedPomos: 0,
       completed: false,
       createdAt: new Date().toISOString(),
+      notes: "• 5 slides maximum : Objectifs, Avancement, Blocages, Next steps\n• Prévoir 10 min de démo live de la nouvelle DA",
       subtasks: []
     },
     {

@@ -23,7 +23,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Flowstate">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=8.2">
+  <link rel="stylesheet" href="css/style.css?v=8.3">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
 </head>
 <body>
@@ -323,15 +323,35 @@
       <section class="tab-view" id="view-tasks">
         <div class="tasks-container">
           <!-- Section Header with Quick Modal Trigger -->
-          <div class="section-header" style="margin-bottom: 0.5rem;">
+          <div class="section-header" style="margin-bottom: 0.75rem;">
             <div>
-              <h2 class="section-title"><span>✅</span> Mes Tâches & Priorités</h2>
-              <p class="section-desc">Découpe tes objectifs en sous-tâches concrètes et planifie tes créneaux.</p>
+              <h2 class="section-title"><span>✅</span> Mes Tâches & Projets</h2>
+              <p class="section-desc">Découpe tes objectifs en sous-tâches concrètes, rédige tes notes et planifie tes sessions.</p>
             </div>
             <button class="btn btn-primary" id="btnOpenTaskModal">
               <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              + Nouvelle Tâche Détaillée
+              + Nouvelle Tâche
             </button>
+          </div>
+
+          <!-- Tasks Metric Ribbon -->
+          <div class="tasks-metrics-ribbon" id="tasksMetricsRibbon">
+            <div class="task-metric-chip">
+              <span class="chip-label">Total</span>
+              <span class="chip-val" id="tasksMetricTotal">0</span>
+            </div>
+            <div class="task-metric-chip">
+              <span class="chip-label">En cours</span>
+              <span class="chip-val active-val" id="tasksMetricActive">0</span>
+            </div>
+            <div class="task-metric-chip">
+              <span class="chip-label">Terminées</span>
+              <span class="chip-val done-val" id="tasksMetricDone">0</span>
+            </div>
+            <div class="task-metric-chip">
+              <span class="chip-label">Sous-tâches</span>
+              <span class="chip-val" id="tasksMetricSubtasks">0/0</span>
+            </div>
           </div>
 
           <!-- Task Creation Bar -->
@@ -368,7 +388,7 @@
               </div>
 
               <button type="button" class="btn btn-secondary btn-sm" id="btnOpenTaskModalWithOptions">
-                + Sous-tâches & Calendrier 📋
+                + Détails, Notes & Sous-tâches 📝
               </button>
             </div>
           </div>
@@ -379,13 +399,14 @@
               <button class="filter-pill-btn active" data-task-filter="all">Toutes</button>
               <button class="filter-pill-btn" data-task-filter="active">En cours</button>
               <button class="filter-pill-btn" data-task-filter="completed">Terminées</button>
+              <button class="filter-pill-btn" data-task-filter="has_notes">📝 Avec Notes</button>
               <button class="filter-pill-btn" data-task-filter="deepwork">Deep Work</button>
               <button class="filter-pill-btn" data-task-filter="high">Priorité Haute</button>
             </div>
 
             <div class="search-box">
               <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="taskSearchInput" placeholder="Rechercher une tâche...">
+              <input type="text" id="taskSearchInput" placeholder="Rechercher une tâche ou note...">
             </div>
           </div>
 
@@ -628,27 +649,35 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
       </div>
     </div>
 
-    <!-- Task Creation & Subtasks Modal -->
+    <!-- Task Creation, Notes & Subtasks Modal -->
     <div class="modal-backdrop" id="taskModal">
-      <div class="modal-dialog modal-lg">
+      <div class="modal-dialog modal-lg modal-task-detail">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-          <h3 id="taskModalHeaderTitle" style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-            <span>⚡</span> <span id="taskModalHeadingText">Nouvelle Tâche & Sous-tâches</span>
-          </h3>
-          <button class="icon-btn" id="btnCloseTaskModal" style="width: 28px; height: 28px;">✕</button>
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <span class="modal-badge-icon">⚡</span>
+            <div>
+              <h3 id="taskModalHeadingText" style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.15rem;">
+                Détail de la Tâche & Notes
+              </h3>
+              <div id="taskModalSubheading" style="font-size: 0.76rem; color: var(--text-dim);">
+                Gère tes notes, tes sous-tâches et ton temps de concentration
+              </div>
+            </div>
+          </div>
+          <button class="icon-btn" id="btnCloseTaskModal" style="width: 32px; height: 32px;" title="Fermer (Échap)">✕</button>
         </div>
 
         <form id="taskModalForm">
           <input type="hidden" id="taskModalEditingId" value="">
 
           <!-- Task Title -->
-          <div class="form-group">
+          <div class="form-group" style="margin-bottom: 1rem;">
             <label class="form-label" for="taskModalInputTitle">Titre de la tâche</label>
-            <input type="text" id="taskModalInputTitle" class="form-input" placeholder="ex: Finaliser la présentation stratégique..." required autocomplete="off">
+            <input type="text" id="taskModalInputTitle" class="form-input form-input-lg" placeholder="ex: Finaliser la présentation stratégique..." required autocomplete="off">
           </div>
 
           <!-- Category, Priority, Pomodoros -->
-          <div class="form-row">
+          <div class="form-row" style="margin-bottom: 1.15rem;">
             <div class="form-group">
               <label class="form-label" for="taskModalSelectCat">Catégorie</label>
               <select id="taskModalSelectCat" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
@@ -671,26 +700,58 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
             <div class="form-group">
               <label class="form-label" for="taskModalSelectPomos">Cycles Deep Work</label>
               <select id="taskModalSelectPomos" class="select-custom" style="width: 100%; padding: 0.65rem 0.85rem;">
-                <option value="1">1 cycle (25-50m)</option>
-                <option value="2" selected>2 cycles</option>
-                <option value="3">3 cycles</option>
-                <option value="4">4 cycles</option>
-                <option value="6">6 cycles</option>
+                <option value="1">1 cycle (25m)</option>
+                <option value="2" selected>2 cycles (50m)</option>
+                <option value="3">3 cycles (1h15)</option>
+                <option value="4">4 cycles (1h40)</option>
+                <option value="6">6 cycles (2h30)</option>
               </select>
             </div>
           </div>
 
-          <!-- Subtasks Builder Section -->
+          <!-- DEDICATED NOTES SPACE -->
+          <div class="modal-section-card task-notes-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.1rem;">📝</span>
+                <label class="form-label" for="taskModalNotes" style="margin-bottom: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-main); text-transform: none; letter-spacing: normal;">
+                  Espace de Notes & Contexte
+                </label>
+              </div>
+              <span id="taskModalNotesStatus" class="notes-status-badge">
+                <span class="status-dot"></span> <span id="notesStatusText">Prêt</span>
+              </span>
+            </div>
+
+            <!-- Notes Quick-Insert Toolbar -->
+            <div class="notes-toolbar">
+              <button type="button" class="note-tool-btn" id="btnNoteBullet" title="Insérer une puce">• Puce</button>
+              <button type="button" class="note-tool-btn" id="btnNoteChecklist" title="Insérer une case à cocher">☑ Checklist</button>
+              <button type="button" class="note-tool-btn" id="btnNoteDate" title="Insérer la date du jour">📅 Date</button>
+              <button type="button" class="note-tool-btn" id="btnNoteLink" title="Insérer un modèle de lien">🔗 Lien</button>
+              <button type="button" class="note-tool-btn note-tool-clear" id="btnNoteClear" title="Vider le bloc de notes">Effacer</button>
+            </div>
+
+            <!-- Notes Textarea -->
+            <textarea id="taskModalNotes" class="task-notes-textarea" placeholder="Note ici toutes les informations, étapes, liens utiles, comptes-rendus ou détails pour cette tâche..." rows="6"></textarea>
+          </div>
+
+          <!-- SUBTASKS BUILDER & PROGRESS -->
           <div class="modal-section-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-              <label class="form-label" style="margin-bottom: 0;">
-                <span>📋</span> Sous-tâches à valider (<span id="taskModalSubtaskCount">0</span>)
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <label class="form-label" style="margin-bottom: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-main); text-transform: none; letter-spacing: normal;">
+                <span>📋</span> Sous-tâches & Décomposition (<span id="taskModalSubtaskCount">0</span>)
               </label>
-              <span style="font-size: 0.75rem; color: var(--text-dim);">Découpe ta tâche en étapes</span>
+              <span id="taskModalSubtaskProgressText" style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--accent);">0%</span>
+            </div>
+
+            <!-- Subtask progress bar -->
+            <div class="subtask-progress-track" style="margin-bottom: 0.85rem;">
+              <div class="subtask-progress-fill" id="taskModalProgressBar" style="width: 0%;"></div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
-              <input type="text" id="taskModalSubtaskInput" class="form-input" placeholder="ex: Étape 1 : Rédiger l'introduction..." style="padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+              <input type="text" id="taskModalSubtaskInput" class="form-input" placeholder="Ajouter une sous-tâche concrète... (Appuie sur Entrée)" style="padding: 0.6rem 0.85rem; font-size: 0.88rem;">
               <button type="button" class="btn btn-secondary btn-sm" id="btnTaskModalAddSubtask">
                 + Ajouter
               </button>
@@ -714,7 +775,7 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
             </label>
 
             <!-- Scheduled fields (collapsible) -->
-            <div id="taskModalScheduleFields" style="display: none; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.06);">
+            <div id="taskModalScheduleFields" style="display: none; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(30,35,45,0.08);">
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Jour</label>
@@ -741,11 +802,22 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
           </div>
 
           <!-- Action buttons -->
-          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-            <button type="button" class="btn btn-ghost" id="btnCancelTaskModal">Annuler</button>
-            <button type="submit" class="btn btn-primary" id="btnSaveTaskModal">
-              <span>Enregistrer la tâche</span> ⚡
-            </button>
+          <div style="display: flex; gap: 0.75rem; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button type="button" class="btn btn-ghost btn-sm" id="btnTaskModalDelete" style="color: var(--accent-rose); display: none;" title="Supprimer définitivement cette tâche">
+                🗑️ Supprimer
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnTaskModalStartFocus" style="display: none;" title="Lancer une session Deep Work">
+                🎯 Lancer Focus
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn btn-ghost" id="btnCancelTaskModal">Fermer</button>
+              <button type="submit" class="btn btn-primary" id="btnSaveTaskModal">
+                <span>Enregistrer la tâche</span> ⚡
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -919,7 +991,7 @@ CREATE POLICY "Allow anon all" ON flowstate_users FOR ALL USING (true) WITH CHEC
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=9').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=10').then((reg) => {
           reg.update();
         }).catch(err => {
           console.log('ServiceWorker registration error:', err);

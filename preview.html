@@ -557,10 +557,14 @@
       display: flex;
       flex-direction: column;
       gap: 1.75rem;
+      height: 100%;
     }
 
     .calendar-card {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     .calendar-header {
@@ -568,6 +572,7 @@
       align-items: flex-start;
       justify-content: space-between;
       margin-bottom: 1.25rem;
+      flex-shrink: 0;
     }
 
     .calendar-title-label {
@@ -614,17 +619,25 @@
 
     /* Timetable Grid */
     .timetable-grid {
+      flex: 1;
       display: grid;
       grid-template-columns: 50px repeat(7, 1fr);
-      gap: 6px;
+      grid-template-rows: auto repeat(5, 1fr);
+      gap: 8px;
       font-size: 0.75rem;
+      min-height: 0;
+      height: 100%;
     }
 
     .timetable-header-cell {
       text-align: center;
       font-weight: 700;
       color: var(--text-body);
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
     }
 
     .timetable-time-label {
@@ -632,32 +645,67 @@
       color: var(--text-muted);
       display: flex;
       align-items: center;
-      height: 38px;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
+      letter-spacing: -0.01em;
+      height: 100%;
     }
 
     .timetable-cell {
-      height: 38px;
+      height: 100%;
+      min-height: 56px;
       background: rgba(0, 0, 0, 0.025);
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px dashed rgba(0, 0, 0, 0.09);
       position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-sizing: border-box;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .timetable-cell:hover {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.18);
     }
 
     .schedule-block {
+      width: 100%;
+      height: 100%;
       border-radius: 8px;
-      padding: 0.4rem 0.5rem;
-      font-size: 0.7rem;
-      font-weight: 700;
+      padding: 0.55rem 0.65rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      gap: 0.25rem;
       cursor: pointer;
-      transition: transform 0.15s;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+      line-height: 1.2;
     }
 
     .schedule-block:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    .schedule-block .block-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .schedule-block .block-time {
+      font-size: 0.68rem;
+      font-weight: 600;
+      opacity: 0.9;
+      letter-spacing: -0.01em;
+      display: block;
     }
 
     .block-deep-orange {
@@ -670,12 +718,13 @@
       background: var(--card-inner);
       box-shadow: var(--shadow-pill);
       color: var(--text-title);
+      border: 1px solid rgba(255, 255, 255, 0.65);
     }
 
     .block-meeting {
-      background: #848a97;
+      background: #737885;
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(30, 35, 45, 0.12);
+      box-shadow: 0 3px 10px rgba(30, 35, 45, 0.14);
     }
 
     /* BOTTOM ROW: Streak & Radio */
@@ -683,6 +732,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
+      flex-shrink: 0;
     }
 
     .streak-dots-row {
@@ -1687,6 +1737,7 @@
               <div class="timetable-header-cell">Sam</div>
               <div class="timetable-header-cell">Dim</div>
 
+              <!-- Row 1: 08:00 -->
               <div class="timetable-time-label">08:00</div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
@@ -1696,62 +1747,97 @@
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
 
+              <!-- Row 2: 09:00 -->
               <div class="timetable-time-label">09:00</div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-deep-orange" style="height: 100%;">
-                  DEEP WORK<br>09:00-11:30
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-orange">
+                  <span class="block-title">Deep Work</span>
+                  <span class="block-time">09:00 - 11:30</span>
                 </div>
               </div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-deep-light" style="height: 100%;">
-                  CODE REVIEW<br>09:00-11:00
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-light">
+                  <span class="block-title">Code Review</span>
+                  <span class="block-time">09:00 - 11:00</span>
                 </div>
               </div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-deep-light" style="height: 100%;">
-                  PROJET CORE<br>09:00-11:00
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-light">
+                  <span class="block-title">Projet Core</span>
+                  <span class="block-time">09:00 - 11:00</span>
                 </div>
               </div>
               <div class="timetable-cell"></div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-deep-orange" style="height: 100%;">
-                  DEEP WORK<br>09:00-11:30
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-orange">
+                  <span class="block-title">Deep Work</span>
+                  <span class="block-time">09:00 - 11:30</span>
                 </div>
               </div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
 
+              <!-- Row 3: 11:00 -->
               <div class="timetable-time-label">11:00</div>
               <div class="timetable-cell"></div>
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-light">
+                  <span class="block-title">Sync Dev</span>
+                  <span class="block-time">11:00 - 12:00</span>
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-orange">
+                  <span class="block-title">Deep Work</span>
+                  <span class="block-time">11:00 - 12:30</span>
+                </div>
+              </div>
+              <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
 
+              <!-- Row 4: 14:00 -->
               <div class="timetable-time-label">14:00</div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-meeting" style="height: 100%;">
-                  TEAM SYNC<br>14:00-15:30
+              <div class="timetable-cell">
+                <div class="schedule-block block-meeting">
+                  <span class="block-title">Team Sync</span>
+                  <span class="block-time">14:00 - 15:30</span>
                 </div>
               </div>
               <div class="timetable-cell"></div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-meeting" style="height: 100%;">
-                  CLIENT DECK<br>14:00-15:30
+              <div class="timetable-cell">
+                <div class="schedule-block block-meeting">
+                  <span class="block-title">Client Deck</span>
+                  <span class="block-time">14:00 - 15:30</span>
                 </div>
               </div>
               <div class="timetable-cell"></div>
-              <div class="timetable-cell" style="grid-row: span 2;">
-                <div class="schedule-block block-meeting" style="height: 100%;">
-                  REVUE DESIGN<br>14:00-15:30
+              <div class="timetable-cell">
+                <div class="schedule-block block-meeting">
+                  <span class="block-title">Revue Design</span>
+                  <span class="block-time">14:00 - 15:30</span>
                 </div>
               </div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
 
+              <!-- Row 5: 16:00 -->
               <div class="timetable-time-label">16:00</div>
               <div class="timetable-cell"></div>
+              <div class="timetable-cell">
+                <div class="schedule-block block-deep-orange">
+                  <span class="block-title">Focus Dev</span>
+                  <span class="block-time">16:00 - 17:30</span>
+                </div>
+              </div>
               <div class="timetable-cell"></div>
-              <div class="timetable-cell"></div>
-              <div class="timetable-cell"></div>
+              <div class="timetable-cell">
+                <div class="schedule-block block-meeting">
+                  <span class="block-title">Stratégie</span>
+                  <span class="block-time">16:00 - 17:00</span>
+                </div>
+              </div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
               <div class="timetable-cell"></div>
@@ -1990,40 +2076,39 @@
           <div class="timetable-header-cell">Sam</div>
           <div class="timetable-header-cell">Dim</div>
 
+          <!-- Row 1: 08:00 -->
           <div class="timetable-time-label">08:00</div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-deep-orange" style="height: 100%;">
-              DEEP WORK<br>08:00-10:00
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-orange">
+              <span class="block-title">Deep Work</span>
+              <span class="block-time">08:00 - 10:00</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-deep-light" style="height: 100%;">
-              PROJET ARCHI<br>08:00-10:00
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-light">
+              <span class="block-title">Projet Archi</span>
+              <span class="block-time">08:00 - 10:00</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
 
-          <div class="timetable-time-label">09:00</div>
-          <div class="timetable-cell"></div>
-          <div class="timetable-cell"></div>
-          <div class="timetable-cell"></div>
-          <div class="timetable-cell"></div>
-          <div class="timetable-cell"></div>
-
+          <!-- Row 2: 10:00 -->
           <div class="timetable-time-label">10:00</div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-deep-light" style="height: 100%;">
-              PROJET CORE<br>10:00-12:00
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-light">
+              <span class="block-title">Projet Core</span>
+              <span class="block-time">10:00 - 12:00</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-deep-orange" style="height: 100%;">
-              DEEP WORK<br>10:00-12:30
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-orange">
+              <span class="block-title">Deep Work</span>
+              <span class="block-time">10:00 - 12:30</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
@@ -2031,43 +2116,68 @@
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
 
-          <div class="timetable-time-label">11:00</div>
+          <!-- Row 3: 11:30 -->
+          <div class="timetable-time-label">11:30</div>
           <div class="timetable-cell"></div>
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-light">
+              <span class="block-title">Revue Code</span>
+              <span class="block-time">11:30 - 12:30</span>
+            </div>
+          </div>
+          <div class="timetable-cell"></div>
+          <div class="timetable-cell">
+            <div class="schedule-block block-meeting">
+              <span class="block-title">Sync Sprint</span>
+              <span class="block-time">11:30 - 12:30</span>
+            </div>
+          </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
 
+          <!-- Row 4: 14:00 -->
           <div class="timetable-time-label">14:00</div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-meeting" style="height: 100%;">
-              TEAM SYNC<br>14:00-15:30
+          <div class="timetable-cell">
+            <div class="schedule-block block-meeting">
+              <span class="block-title">Team Sync</span>
+              <span class="block-time">14:00 - 15:30</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-meeting" style="height: 100%;">
-              CLIENT DECK<br>14:00-15:30
+          <div class="timetable-cell">
+            <div class="schedule-block block-meeting">
+              <span class="block-title">Client Deck</span>
+              <span class="block-time">14:00 - 15:30</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-meeting" style="height: 100%;">
-              REVUE DESIGN<br>14:00-15:30
+          <div class="timetable-cell">
+            <div class="schedule-block block-meeting">
+              <span class="block-title">Revue Design</span>
+              <span class="block-time">14:00 - 15:30</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
 
+          <!-- Row 5: 16:00 -->
           <div class="timetable-time-label">16:00</div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell" style="grid-row: span 2;">
-            <div class="schedule-block block-deep-orange" style="height: 100%;">
-              FOCUS DEV<br>16:00-18:00
+          <div class="timetable-cell">
+            <div class="schedule-block block-deep-orange">
+              <span class="block-title">Focus Dev</span>
+              <span class="block-time">16:00 - 18:00</span>
             </div>
           </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
-          <div class="timetable-cell"></div>
+          <div class="timetable-cell">
+            <div class="schedule-block block-meeting">
+              <span class="block-title">Stratégie Q4</span>
+              <span class="block-time">16:00 - 17:30</span>
+            </div>
+          </div>
           <div class="timetable-cell"></div>
           <div class="timetable-cell"></div>
         </div>
